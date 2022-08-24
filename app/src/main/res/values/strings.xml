@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Terrain Tracker</string>
+    <string name="title_activity_time_line">Map</string>
+    <string name="title_activity_emp_live_location">Map</string>
+</resources>
