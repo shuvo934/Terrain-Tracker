@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="ttit.com.shuvo.terraintracker">
-
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -12,19 +11,18 @@
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+<!--    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission
-        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
+<!--    <uses-permission-->
+<!--        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"-->
+<!--        tools:ignore="ScopedStorage" />-->
     <uses-permission
         android:name="android.permission.MANAGE_DOCUMENTS"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+<!--    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />-->
 
     <application
         android:allowBackup="true"
@@ -37,6 +35,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TerrainTracker">
 
+        <activity
+            android:name=".MainPage.attendanceData.EmpAttendance"
+            android:screenOrientation="portrait"
+            android:exported="false" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -51,13 +53,20 @@
 
         <activity
             android:name=".livelocation.EmpLiveLocation"
-            android:label="@string/title_activity_emp_live_location"></activity>
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_emp_live_location" />
         <activity
             android:name=".timeline.TimeLineActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_time_line" />
-        <activity android:name=".MainPage.HomePage" />
-        <activity android:name=".loginFile.Login" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainPage.HomePage"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".loginFile.Login"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

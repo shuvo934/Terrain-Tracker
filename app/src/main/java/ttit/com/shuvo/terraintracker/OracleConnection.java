@@ -10,7 +10,8 @@ public class OracleConnection {
     private static final String DEFAULT_DRIVER = "oracle.jdbc.driver.OracleDriver";
     //private static final String DEFAULT_URL = "jdbc:oracle:thin:@192.168.1.5:1521:TT";
     private static final String DEFAULT_URL = "jdbc:oracle:thin:@103.56.208.123:1521:TT";
-    private static final String DEFAULT_USERNAME = "IKGL";
+//    public static String DEFAULT_USERNAME = "IKGL";
+    public static String DEFAULT_USERNAME = "TTRAMS";
     private static final String DEFAULT_PASSWORD = "TTI";
     private Connection connection;
     Context context;

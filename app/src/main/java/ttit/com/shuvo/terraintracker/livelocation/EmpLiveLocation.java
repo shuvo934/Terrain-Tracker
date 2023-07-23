@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
@@ -79,6 +80,7 @@ import ttit.com.shuvo.terraintracker.R;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static ttit.com.shuvo.terraintracker.OracleConnection.DEFAULT_USERNAME;
 
 public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -181,6 +183,7 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
         categories.add("SATELLITE");
         categories.add("TERRAIN");
         categories.add("HYBRID");
+        categories.add("NO LANDMARK");
 
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, categories);
 
@@ -234,6 +237,19 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
                 switch (name) {
                     case "NORMAL":
                         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                        try {
+                            // Customise the styling of the base map using a JSON object defined
+                            // in a raw resource file.
+                            boolean success = googleMap.setMapStyle(
+                                    MapStyleOptions.loadRawResourceStyle(
+                                            EmpLiveLocation.this, R.raw.normal));
+
+                            if (!success) {
+                                Log.i("Failed ", "Style parsing failed.");
+                            }
+                        } catch (Resources.NotFoundException e) {
+                            Log.e("Style ", "Can't find style. Error: ", e);
+                        }
                         mMap.setTrafficEnabled(false);
                         break;
                     case "SATELLITE":
@@ -250,7 +266,37 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
                         break;
                     case "TRAFFIC":
                         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                        try {
+                            // Customise the styling of the base map using a JSON object defined
+                            // in a raw resource file.
+                            boolean success = googleMap.setMapStyle(
+                                    MapStyleOptions.loadRawResourceStyle(
+                                            EmpLiveLocation.this, R.raw.normal));
+
+                            if (!success) {
+                                Log.i("Failed ", "Style parsing failed.");
+                            }
+                        } catch (Resources.NotFoundException e) {
+                            Log.e("Style ", "Can't find style. Error: ", e);
+                        }
                         mMap.setTrafficEnabled(true);
+                        break;
+                    case "NO LANDMARK":
+                        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                        try {
+                            // Customise the styling of the base map using a JSON object defined
+                            // in a raw resource file.
+                            boolean success = googleMap.setMapStyle(
+                                    MapStyleOptions.loadRawResourceStyle(
+                                            EmpLiveLocation.this, R.raw.no_landmark));
+
+                            if (!success) {
+                                Log.i("Failed ", "Style parsing failed.");
+                            }
+                        } catch (Resources.NotFoundException e) {
+                            Log.e("Style ", "Can't find style. Error: ", e);
+                        }
+                        mMap.setTrafficEnabled(false);
                         break;
                     default:
                         break;
@@ -434,12 +480,23 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
 
     public void getUpdatedLocation() {
 
-        if (!allEmp) {
-            url = "http://103.56.208.123:8001/apex/tracker/rest-v4/getloctracker/?empno="+ emp_id;
-        } else {
-            url = "http://103.56.208.123:8001/apex/tracker/rest-v4/getempv10/?div_id="+div_id+"&dept_id="+dep_id+"&desig_id="+des_id;
+        if (DEFAULT_USERNAME.equals("IKGL")) {
+            if (!allEmp) {
+                url = "http://103.56.208.123:8001/apex/tracker/rest-v4/getloctracker/?empno="+ emp_id;
+            } else {
+                url = "http://103.56.208.123:8001/apex/tracker/rest-v4/getempv10/?div_id="+div_id+"&dept_id="+dep_id+"&desig_id="+des_id;
 
+            }
         }
+        else if (DEFAULT_USERNAME.equals("TTRAMS")){
+            if (!allEmp) {
+                url = "http://103.56.208.123:8001/apex/ttrams/tracker/get_live_loc?emp_id="+ emp_id;
+            }
+            else {
+                url = "http://103.56.208.123:8001/apex/ttrams/tracker/get_all_emp_location?div_id="+div_id+"&dept_id="+dep_id+"&desig_id="+des_id;
+            }
+        }
+
 
         System.out.println(url);
         RequestQueue requestQueue = Volley.newRequestQueue(this);

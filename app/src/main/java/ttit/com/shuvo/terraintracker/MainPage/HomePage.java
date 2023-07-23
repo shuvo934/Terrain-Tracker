@@ -3,12 +3,18 @@ package ttit.com.shuvo.terraintracker.MainPage;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -26,7 +32,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.github.dewinjm.monthyearpicker.MonthFormat;
+import com.github.dewinjm.monthyearpicker.MonthYearPickerDialog;
+import com.github.dewinjm.monthyearpicker.MonthYearPickerDialogFragment;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 import com.rosemaryapp.amazingspinner.AmazingSpinner;
 
 import java.io.File;
@@ -43,10 +61,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+import ttit.com.shuvo.terraintracker.MainPage.adapters.AttenReportAdapter;
+import ttit.com.shuvo.terraintracker.MainPage.attendanceData.EmpAttendance;
+import ttit.com.shuvo.terraintracker.MainPage.lists.AttenReportList;
+import ttit.com.shuvo.terraintracker.MainPage.lists.ThreeItemLists;
 import ttit.com.shuvo.terraintracker.MainPage.lists.TwoItemLists;
 import ttit.com.shuvo.terraintracker.R;
 import ttit.com.shuvo.terraintracker.livelocation.EmpLiveLocation;
@@ -54,6 +82,7 @@ import ttit.com.shuvo.terraintracker.loginFile.Login;
 import ttit.com.shuvo.terraintracker.progressBar.WaitProgress;
 import ttit.com.shuvo.terraintracker.timeline.TimeLineActivity;
 
+import static ttit.com.shuvo.terraintracker.OracleConnection.DEFAULT_USERNAME;
 import static ttit.com.shuvo.terraintracker.OracleConnection.createConnection;
 import static ttit.com.shuvo.terraintracker.loginFile.Login.userDesignations;
 import static ttit.com.shuvo.terraintracker.loginFile.Login.userInfoLists;
@@ -71,6 +100,7 @@ public class HomePage extends AppCompatActivity {
     public static final String EMP_CODE = "EMP_CODE";
     public static final String EMP_ID = "EMP_ID";
     public static final String IS_LOGIN = "TRUE_FALSE";
+    public static final String DATABASE_NAME = "DATABASE_NAME";
 
     String getUserName = "";
     String getEmpCode = "";
@@ -98,6 +128,7 @@ public class HomePage extends AppCompatActivity {
     String div_id = "";
     String dep_id = "";
     String emp_id = "";
+    String emp_code = "";
     String des_id = "";
     String empName = "";
     String email = "";
@@ -109,7 +140,7 @@ public class HomePage extends AppCompatActivity {
 
     ArrayList<TwoItemLists> divLists;
     ArrayList<TwoItemLists> depLists;
-    ArrayList<TwoItemLists> empLists;
+    ArrayList<ThreeItemLists> empLists;
     ArrayList<TwoItemLists> desLists;
 
     CardView empCard;
@@ -135,6 +166,9 @@ public class HomePage extends AppCompatActivity {
     String hostUserName = "";
     String sessionId = "";
     String osName = "";
+    Bitmap selectedImage;
+    boolean imageFound = false;
+    Button attend;
 
     Button setData;
     public static ArrayList<String> testDataBlob;
@@ -152,6 +186,8 @@ public class HomePage extends AppCompatActivity {
         divSpinner = findViewById(R.id.division_type_spinner);
         empSpinner = findViewById(R.id.employee_type_spinner);
         desSpinner = findViewById(R.id.designation_type_spinner);
+        userImage = findViewById(R.id.user_pic);
+        attend = findViewById(R.id.attendance_details_button);
 
         empCard = findViewById(R.id.emp_card);
         empCard.setVisibility(View.GONE);
@@ -209,6 +245,7 @@ public class HomePage extends AppCompatActivity {
         getEmpCode = sharedpreferences.getString(EMP_CODE,null);
         getEmpId = sharedpreferences.getString(EMP_ID,null);
         getLogin = sharedpreferences.getBoolean(IS_LOGIN, false);
+        DEFAULT_USERNAME = sharedpreferences.getString(DATABASE_NAME,DEFAULT_USERNAME);
 
         System.out.println(getUserName);
         System.out.println(getEmpCode);
@@ -387,6 +424,7 @@ public class HomePage extends AppCompatActivity {
                 for (int i = 0; i <empLists.size(); i++) {
                     if (name.equals(empLists.get(i).getName())) {
                         emp_id = empLists.get(i).getId();
+                        emp_code = empLists.get(i).getCode();
                         if (emp_id.isEmpty()) {
                             empName = "";
                         } else {
@@ -400,6 +438,16 @@ public class HomePage extends AppCompatActivity {
             }
         });
 
+        attend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomePage.this, EmpAttendance.class);
+                intent.putExtra("EMP_NAME",empName);
+                intent.putExtra("TITLE",title);
+                intent.putExtra("EMP_ID",emp_id);
+                startActivity(intent);
+            }
+        });
 
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -984,6 +1032,7 @@ public class HomePage extends AppCompatActivity {
 
                 if (trackingFlag == 1) {
                     timelineButton.setVisibility(View.VISIBLE);
+                    setData.setVisibility(View.VISIBLE);
 
                     if (liveFlag == 1) {
                         liveLocationButton.setVisibility(View.VISIBLE);
@@ -996,7 +1045,18 @@ public class HomePage extends AppCompatActivity {
                     liveLocationButton.setVisibility(View.GONE);
                     timelineButton.setVisibility(View.GONE);
                     msgTimeline.setVisibility(View.VISIBLE);
+                    setData.setVisibility(View.GONE);
                 }
+                if (imageFound) {
+                    Glide.with(HomePage.this)
+                            .load(selectedImage)
+                            .fitCenter()
+                            .into(userImage);
+                }
+                else {
+                    userImage.setImageResource(R.drawable.profile);
+                }
+
 
                 //new ReOrderLevelCheck().execute();
 
@@ -1114,19 +1174,31 @@ public class HomePage extends AppCompatActivity {
 
 
 
-            ResultSet resultSet1 = stmt.executeQuery("SELECT\n" +
+//            ResultSet resultSet1 = stmt.executeQuery("SELECT\n" +
+//                    "    division_mst.divm_id,\n" +
+//                    "    division_mst.divm_name\n" +
+//                    "FROM\n" +
+//                    "    division_mst\n" +
+//                    "order by divm_id");
+            ResultSet resultSet1 = stmt.executeQuery("SELECT DISTINCT\n" +
                     "    division_mst.divm_id,\n" +
                     "    division_mst.divm_name\n" +
                     "FROM\n" +
-                    "    division_mst\n" +
-                    "order by divm_id");
+                    "         division_mst\n" +
+                    "    INNER JOIN job_setup_mst ON job_setup_mst.jsm_divm_id = division_mst.divm_id\n" +
+                    "    INNER JOIN job_setup_dtl ON job_setup_dtl.jsd_jsm_id = job_setup_mst.jsm_id\n" +
+                    "    INNER JOIN emp_mst ON emp_mst.emp_jsd_id = job_setup_dtl.jsd_id\n" +
+                    "WHERE emp_mst.emp_quit = 0\n" +
+                    "ORDER BY\n" +
+                    "    division_mst.divm_id");
 
             while (resultSet1.next()) {
                 divLists.add(new TwoItemLists(resultSet1.getString(1),resultSet1.getString(2)));
             }
 //            categoryLists.add(new ReceiveTypeList("","All Categories"));
 
-            ResultSet rs = stmt.executeQuery("SELECT CIM_NAME,CIM_LOGO_APPS FROM COMPANY_INFO_MST\n");
+            ResultSet rs = stmt.executeQuery("SELECT CIM_NAME--,CIM_LOGO_APPS\n" +
+                    " FROM COMPANY_INFO_MST\n");
 
             while (rs.next()) {
                 companyName = rs.getString(1);
@@ -1202,14 +1274,28 @@ public class HomePage extends AppCompatActivity {
                 div_id = null;
             }
 
-            ResultSet resultSet1 = stmt.executeQuery("SELECT\n" +
+//            ResultSet resultSet1 = stmt.executeQuery("SELECT\n" +
+//                    "    dept_mst.dept_id,\n" +
+//                    "    dept_mst.dept_name,\n" +
+//                    "    dept_mst.dept_divm_id\n" +
+//                    "FROM\n" +
+//                    "    dept_mst\n" +
+//                    "where dept_divm_id = "+div_id+"\n" +
+//                    "order by dept_id");
+            ResultSet resultSet1 = stmt.executeQuery("SELECT DISTINCT\n" +
                     "    dept_mst.dept_id,\n" +
                     "    dept_mst.dept_name,\n" +
                     "    dept_mst.dept_divm_id\n" +
                     "FROM\n" +
-                    "    dept_mst\n" +
-                    "where dept_divm_id = "+div_id+"\n" +
-                    "order by dept_id");
+                    "         dept_mst\n" +
+                    "    INNER JOIN job_setup_mst ON job_setup_mst.jsm_dept_id = dept_mst.dept_id\n" +
+                    "    INNER JOIN job_setup_dtl ON job_setup_dtl.jsd_jsm_id = job_setup_mst.jsm_id\n" +
+                    "    INNER JOIN emp_mst ON emp_mst.emp_jsd_id = job_setup_dtl.jsd_id\n" +
+                    "WHERE\n" +
+                    "        dept_mst.dept_divm_id = "+div_id+"\n" +
+                    "    AND emp_mst.emp_quit = 0\n" +
+                    "ORDER BY\n" +
+                    "    dept_mst.dept_id");
 
             while (resultSet1.next()) {
                 depLists.add(new TwoItemLists(resultSet1.getString(1),resultSet1.getString(2)));
@@ -1249,7 +1335,29 @@ public class HomePage extends AppCompatActivity {
                 dep_id = null;
             }
 
-            ResultSet resultSet1 = stmt.executeQuery("select distinct desig_id, desig_name from emp_details_v where desig_name is not NULL and dept_id = "+dep_id+" and divm_id = "+div_id+"\n");
+//            ResultSet resultSet1 = stmt.executeQuery("select distinct desig_id, desig_name from emp_details_v where desig_name is not NULL and dept_id = "+dep_id+" and divm_id = "+div_id+"\n");
+            ResultSet resultSet1 = stmt.executeQuery("SELECT DISTINCT\n" +
+                    "    desig_mst.desig_id,\n" +
+                    "    desig_mst.desig_name\n" +
+                    "FROM\n" +
+                    "    desig_mst,\n" +
+                    "    job_setup_mst,\n" +
+                    "    dept_mst,\n" +
+                    "    division_mst,\n" +
+                    "    job_setup_dtl,\n" +
+                    "    emp_mst\n" +
+                    "WHERE\n" +
+                    "        desig_mst.desig_id = job_setup_mst.jsm_desig_id\n" +
+                    "    AND job_setup_mst.jsm_divm_id = division_mst.divm_id\n" +
+                    "    AND job_setup_mst.jsm_dept_id = dept_mst.dept_id\n" +
+                    "    AND emp_mst.emp_jsd_id = job_setup_dtl.jsd_id\n" +
+                    "    AND job_setup_mst.jsm_id = job_setup_dtl.jsd_jsm_id\n" +
+                    "    AND desig_mst.desig_name IS NOT NULL\n" +
+                    "    AND division_mst.divm_id = "+div_id+"\n" +
+                    "    AND dept_mst.dept_id = "+dep_id+"\n" +
+                    "    AND emp_mst.emp_quit = 0\n" +
+                    "ORDER BY\n" +
+                    "    desig_mst.desig_id");
 
             while (resultSet1.next()) {
                 desLists.add(new TwoItemLists(resultSet1.getString(1),resultSet1.getString(2)));
@@ -1316,7 +1424,7 @@ public class HomePage extends AppCompatActivity {
                     "    emp_mst.emp_id");
 
             while (resultSet1.next()) {
-                empLists.add(new TwoItemLists(resultSet1.getString(1),resultSet1.getString(2)+" ("+resultSet1.getString(3)+")"));
+                empLists.add(new ThreeItemLists(resultSet1.getString(1),resultSet1.getString(2)+" ("+resultSet1.getString(3)+")",resultSet1.getString(3)));
             }
 
             ResultSet resultSet = stmt.executeQuery("SELECT\n" +
@@ -1368,6 +1476,7 @@ public class HomePage extends AppCompatActivity {
             //    Toast.makeText(MainActivity.this, "Connected",Toast.LENGTH_SHORT).show();
 
             Statement stmt = connection.createStatement();
+            imageFound = false;
 
             if (emp_id.isEmpty()) {
                 emp_id = null;
@@ -1394,6 +1503,25 @@ public class HomePage extends AppCompatActivity {
                 trackingFlag = resultSet.getInt(1);
                 liveFlag = resultSet.getInt(2);
             }
+            System.out.println(emp_code);
+//            ResultSet imageResult = stmt.executeQuery("SELECT EMP_IMAGE FROM EMP_MST WHERE EMP_ID = "+emp_id+"");
+            ResultSet imageResult = stmt.executeQuery("Select loadblobfromfile('"+emp_code+"'||'.jpg') EMP_IMAGE from dual");
+
+            while (imageResult.next()) {
+                Blob b = imageResult.getBlob(1);
+                if (b == null) {
+                    imageFound = false;
+                }
+                else {
+                    imageFound = true;
+                    byte[] barr =b.getBytes(1,(int)b.length());
+                    selectedImage = BitmapFactory.decodeByteArray(barr,0,barr.length);
+                }
+                System.out.println(imageFound);
+            }
+            imageResult.close();
+
+            stmt.close();
 
             connected = true;
 

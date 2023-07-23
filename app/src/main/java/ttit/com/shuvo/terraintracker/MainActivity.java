@@ -22,8 +22,8 @@ import ttit.com.shuvo.terraintracker.loginFile.Login;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Handler mHandler = new Handler();
-    private int FINE_LOCATION_ACCESS_REQUEST_CODE = 10001;
+    private final Handler mHandler = new Handler();
+    private final int FINE_LOCATION_ACCESS_REQUEST_CODE = 10001;
 
 
     SharedPreferences loginOrNot;

@@ -17,12 +17,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.rosemaryapp.amazingspinner.AmazingSpinner;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -34,6 +37,7 @@ import ttit.com.shuvo.terraintracker.MainPage.HomePage;
 import ttit.com.shuvo.terraintracker.R;
 import ttit.com.shuvo.terraintracker.progressBar.WaitProgress;
 
+import static ttit.com.shuvo.terraintracker.OracleConnection.DEFAULT_USERNAME;
 import static ttit.com.shuvo.terraintracker.OracleConnection.createConnection;
 
 public class Login extends AppCompatActivity {
@@ -58,6 +62,7 @@ public class Login extends AppCompatActivity {
     private Boolean conn = false;
     private Boolean infoConnected = false;
     private Boolean connected = false;
+    AmazingSpinner database;
 
     private Boolean getConn = false;
     private Boolean getConnected = false;
@@ -74,6 +79,7 @@ public class Login extends AppCompatActivity {
     public static final String EMP_CODE = "EMP_CODE";
     public static final String EMP_ID = "EMP_ID";
     public static final String IS_LOGIN = "TRUE_FALSE";
+    public static final String DATABASE_NAME = "DATABASE_NAME";
 
     SharedPreferences sharedpreferences;
     SharedPreferences sharedPreferencesForLoginInfo;
@@ -100,6 +106,7 @@ public class Login extends AppCompatActivity {
         user = findViewById(R.id.user_name_given);
         pass = findViewById(R.id.password_given);
         checkBox = findViewById(R.id.remember_checkbox);
+        database = findViewById(R.id.database_spinner);
 
         login_failed = findViewById(R.id.email_pass_miss);
 
@@ -111,6 +118,22 @@ public class Login extends AppCompatActivity {
         getUserName = sharedpreferences.getString(user_emp_code,null);
         getPassword = sharedpreferences.getString(user_password,null);
         getChecked = sharedpreferences.getBoolean(checked,false);
+
+        database.setText(DEFAULT_USERNAME);
+        ArrayList<String> type = new ArrayList<>();
+        type.add("IKGL");
+        type.add("TTRAMS");
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.dropdown_menu_popup_item,R.id.drop_down_item,type);
+
+        database.setAdapter(arrayAdapter);
+
+        database.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                DEFAULT_USERNAME = parent.getItemAtPosition(position).toString();
+                new Check().execute();
+            }
+        });
 
         if (getUserName != null) {
             user.setText(getUserName);
@@ -297,12 +320,14 @@ public class Login extends AppCompatActivity {
                         editor1.remove(EMP_CODE);
                         editor1.remove(EMP_ID);
                         editor1.remove(IS_LOGIN);
+                        editor1.remove(DATABASE_NAME);
 
                         String name = userInfoLists.get(0).getUser_fname() + " " + userInfoLists.get(0).getUser_lname();
                         editor1.putString(EMP_NAME,name);
                         editor1.putString(EMP_ID,userInfoLists.get(0).getEmp_id());
                         editor1.putString(EMP_CODE,userInfoLists.get(0).getUserName());
                         editor1.putBoolean(IS_LOGIN,true);
+                        editor1.putString(DATABASE_NAME,DEFAULT_USERNAME);
                         editor1.apply();
                         editor1.commit();
 
@@ -441,13 +466,19 @@ public class Login extends AppCompatActivity {
             }
 
             if (!userId.equals("-1")) {
+                String empCode = "";
+                ResultSet resEmpCode = stmt.executeQuery("select COM_PACK.GET_EMP_CODE_BY_EMP_ID(COM_PACK.GET_EMPLOYEE_ID_BY_USER('"+userName+"')) valu from dual");
+                while (resEmpCode.next()) {
+                    empCode = resEmpCode.getString(1);
+                }
+                resEmpCode.close();
 
                 ResultSet resultSet = stmt.executeQuery("Select USR_NAME, USR_FNAME, USR_LNAME, USR_EMAIL, USR_CONTACT, USR_EMP_ID FROM ISP_USER\n" +
                         "where USR_ID = " + userId + "\n");
 
                 while (resultSet.next()) {
                     emp_id = resultSet.getString(6);
-                    userInfoLists.add(new UserInfoList(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getString(5), resultSet.getString(6)));
+                    userInfoLists.add(new UserInfoList(empCode, resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getString(5), resultSet.getString(6)));
                 }
 
                 ResultSet resultSet1 = stmt.executeQuery("SELECT DISTINCT JOB_SETUP_MST.JSM_CODE, JOB_SETUP_MST.JSM_NAME TEMP_TITLE, \n" +
@@ -494,7 +525,8 @@ public class Login extends AppCompatActivity {
 
             Statement stmt = connection.createStatement();
 
-            ResultSet rs = stmt.executeQuery("SELECT CIM_NAME,CIM_LOGO_APPS FROM COMPANY_INFO_MST\n");
+            ResultSet rs = stmt.executeQuery("SELECT CIM_NAME --,CIM_LOGO_APPS \n" +
+                    "FROM COMPANY_INFO_MST\n");
 
             while (rs.next()) {
                 CompanyName = rs.getString(1);
