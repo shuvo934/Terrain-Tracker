@@ -2,13 +2,14 @@ package ttit.com.shuvo.terraintracker.timeline;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -16,27 +17,28 @@ import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -44,34 +46,34 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import devs.mulham.horizontalcalendar.HorizontalCalendar;
 import devs.mulham.horizontalcalendar.utils.HorizontalCalendarListener;
+import ttit.com.shuvo.terraintracker.MainPage.HomePage;
 import ttit.com.shuvo.terraintracker.R;
 import ttit.com.shuvo.terraintracker.progressBar.WaitProgress;
 
-import static ttit.com.shuvo.terraintracker.MainPage.HomePage.testDataBlob;
-import static ttit.com.shuvo.terraintracker.OracleConnection.createConnection;
+import static ttit.com.shuvo.terraintracker.Constants.api_url_front;
+import static ttit.com.shuvo.terraintracker.dash_board.Dashboard.testDataBlob;
 import static ttit.com.shuvo.terraintracker.timeline.LocationAdapter.firstSelected;
 import static ttit.com.shuvo.terraintracker.timeline.LocationAdapter.lastSelected;
 import static ttit.com.shuvo.terraintracker.timeline.StoppedLocationAdapter.isit;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class TimeLineActivity extends FragmentActivity implements OnMapReadyCallback,LocationAdapter.ClickedItem {
 
@@ -93,15 +95,12 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
     HorizontalCalendar horizontalCalendar;
 
     WaitProgress waitProgress = new WaitProgress();
-    private String message = null;
     private Boolean conn = false;
     private Boolean blobNotNull = false;
     private Boolean connected = false;
-    private Connection connection;
-
     String selectedDate = "";
 
-    String downloadFile = "Downloaded_GPX.gpx";
+    String downloadFile = "t_tracker_downloaded_GPX.gpx";
     String todayDate = "";
     String todayFile = "";
 
@@ -123,6 +122,12 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
     String totodayDate = "";
     String seselectDate = "";
 
+    ArrayList<String> trk = new ArrayList<>();
+    String tr_option = "1";
+    ArrayList<AreaList> areaLists;
+
+    Logger logger = Logger.getLogger(HomePage.class.getName());
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,13 +135,11 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
         Intent intent = getIntent();
         emp_id = intent.getStringExtra("EMP_ID");
-        System.out.println("EMP ID =" + emp_id);
-
-        downloadFile = emp_id+"_Downloaded_GPX.gpx";
 
         toDate = findViewById(R.id.date_text);
         noRecordMsg = findViewById(R.id.no_record_msg);
@@ -145,6 +148,9 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         scrollView = findViewById(R.id.scrollview_data);
 
 
+        areaLists = new ArrayList<>();
+        tr_option = "1";
+        trk = new ArrayList<>();
         wptList = new ArrayList<>();
         multiGpxList = new ArrayList<>();
         locationNameArrays = new ArrayList<>();
@@ -168,18 +174,18 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
      */
     @SuppressLint("PotentialBehaviorOverride")
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
             @Override
-            public View getInfoWindow(Marker arg0) {
+            public View getInfoWindow(@NonNull Marker arg0) {
                 return null;
             }
 
             @Override
-            public View getInfoContents(Marker marker) {
+            public View getInfoContents(@NonNull Marker marker) {
 
                 LinearLayout info = new LinearLayout(getApplicationContext());
                 info.setOrientation(LinearLayout.VERTICAL);
@@ -221,7 +227,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         todayFile = emp_id+"_"+todayDate+"_track.gpx";
         String nowDate = sdf.format(today);
         toDate.setText(nowDate);
-        GpxInMapToday();
+        getTodayTimeLine();
 
 
         System.out.println(Calendar.getInstance().getTime());
@@ -237,8 +243,6 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
             @Override
             public void onDateSelected(Calendar date, int position) {
-
-
                 mMap.clear();
                 wptList = new ArrayList<>();
                 multiGpxList = new ArrayList<>();
@@ -271,26 +275,34 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                 toDate.setText(nowDate);
 
                 if (selectedDate.equals(todayDate)) {
-                    todayFile = emp_id+"_"+fileName+"_track.gpx";
-                    noRecordMsg.setVisibility(View.GONE);
-                    GpxInMapToday();
+                    if (tr_option.equals("1")) {
+                        todayFile = emp_id + "_" + fileName + "_track.gpx";
+                        noRecordMsg.setVisibility(View.GONE);
+                        GpxInMapToday();
+                    }
+                    else {
+                        noRecordMsg.setVisibility(View.GONE);
+                        getTodayDATA();
+                    }
 
                 } else {
                     noRecordMsg.setVisibility(View.GONE);
                     if (testDataBlob.isEmpty()) {
-                        new Check().execute();
+                        getTimeLine();
                     } else {
                         int dayNo = 0;
                         try {
                             Date date1 = simpleDateFormat.parse(totodayDate);
                             Date date2 = simpleDateFormat.parse(seselectDate);
+                            assert date1 != null;
+                            assert date2 != null;
                             long diff = date1.getTime() - date2.getTime();
                             System.out.println ("Days: " + TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS));
                             dayNo = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-                            float days = (diff / (1000*60*60*24));
+                            float days = ((float) diff / (1000*60*60*24));
                             System.out.println((int)days);
                         } catch (ParseException e) {
-                            e.printStackTrace();
+                            logger.log(Level.WARNING, e.getMessage(), e);
                         }
 
                         if (dayNo > 0 && dayNo < 7) {
@@ -298,7 +310,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                             GpxInMapTestData(file);
 
                         } else {
-                            new Check().execute();
+                            getTimeLine();
                         }
 
                     }
@@ -310,144 +322,138 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
 
         });
 
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(@NonNull LatLng latLng) {
-                for (int i = 0 ; i < polyLindata.size(); i++) {
-                    Polyline polyline = polyLindata.get(i).getPolyline();
-                    polyline.setColor(Color.parseColor("#74b9ff"));
-                    polyline.setWidth(17);
-                }
-                for (int i = 0; i < markerData.size(); i++) {
-                    Marker marker = markerData.get(i).getMarker();
-                    marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_icon));
-                    marker.hideInfoWindow();
-                }
-                for (int i = 0 ; i < allMarkerLists.size(); i++) {
-                    Marker marker = allMarkerLists.get(i).getMarker();
-                    marker.hideInfoWindow();
-                    String type = allMarkerLists.get(i).getMarkerType();
-                    switch (type) {
-                        case "1":
-                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_icon));
-                            break;
-                        case "2":
-                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.stopped_location_icon));
-                            break;
-                        case "3":
-                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.star_loc_icon_new));
-                            break;
-                        case "4":
-                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.stop_loc_icon_new));
-                            break;
-                    }
-                }
-
-                isit = false;
-                firstSelected = false;
-                lastSelected = false;
-                locationAdapter.notifyDataSetChanged();
+        mMap.setOnMapClickListener(latLng -> {
+            for (int i = 0 ; i < polyLindata.size(); i++) {
+                Polyline polyline = polyLindata.get(i).getPolyline();
+                polyline.setColor(Color.parseColor("#74b9ff"));
+                polyline.setWidth(17);
             }
+            for (int i = 0; i < markerData.size(); i++) {
+                Marker marker = markerData.get(i).getMarker();
+                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_icon));
+                marker.hideInfoWindow();
+            }
+            for (int i = 0 ; i < allMarkerLists.size(); i++) {
+                Marker marker = allMarkerLists.get(i).getMarker();
+                marker.hideInfoWindow();
+                String type = allMarkerLists.get(i).getMarkerType();
+                switch (type) {
+                    case "1":
+                        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_icon));
+                        break;
+                    case "2":
+                        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.stopped_location_icon));
+                        break;
+                    case "3":
+                        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.star_loc_icon_new));
+                        break;
+                    case "4":
+                        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.stop_loc_icon_new));
+                        break;
+                }
+            }
+
+            isit = false;
+            firstSelected = false;
+            lastSelected = false;
+            locationAdapter.notifyDataSetChanged();
         });
 
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(@NonNull Marker marker) {
-                markerClicked = true;
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 18));
-                for (int i = 0 ; i < allMarkerLists.size(); i++) {
-                    Marker marker1 = allMarkerLists.get(i).getMarker();
-                    //marker1.hideInfoWindow();
-                    String type = allMarkerLists.get(i).getMarkerType();
-                    switch (type) {
-                        case "1":
-                            marker1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_icon));
+        mMap.setOnMarkerClickListener(marker -> {
+            markerClicked = true;
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 18));
+            for (int i = 0 ; i < allMarkerLists.size(); i++) {
+                Marker marker1 = allMarkerLists.get(i).getMarker();
+                //marker1.hideInfoWindow();
+                String type = allMarkerLists.get(i).getMarkerType();
+                switch (type) {
+                    case "1":
+                        marker1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_icon));
 
-                            break;
-                        case "2":
-                            marker1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.stopped_location_icon));
+                        break;
+                    case "2":
+                        marker1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.stopped_location_icon));
 
-                            break;
-                        case "3":
-                            marker1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.star_loc_icon_new));
+                        break;
+                    case "3":
+                        marker1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.star_loc_icon_new));
 
-                            break;
-                        case "4":
-                            marker1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.stop_loc_icon_new));
+                        break;
+                    case "4":
+                        marker1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.stop_loc_icon_new));
 
-                            break;
-                    }
-
-                    String id = marker.getId();
-                    String allId = marker1.getId();
-                    String markerId = allMarkerLists.get(i).getMarkerId();
-
-                    if (id.equals(allId)) {
-
-                        switch (type) {
-                            case "1":
-                                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_icon_active));
-                                lastSelected = false;
-                                firstSelected = true;
-                                isit = false;
-                                for (int j = 0 ; j< locationNameArrays.size(); j++) {
-                                    String marId = locationNameArrays.get(j).getFirstMarkerId();
-                                    if (markerId.equals(marId)) {
-                                        selectedAdapterPosition = j;
-                                    }
-                                }
-                                break;
-                            case "2":
-                                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.stop_loc_icon_selected));
-                                isit = true;
-                                firstSelected = false;
-                                lastSelected = false;
-                                for (int j = 0 ; j< locationNameArrays.size(); j++) {
-
-                                    ArrayList<StoppedLocationTime> sss = locationNameArrays.get(j).getStoppedLocationTimes();
-                                    for (int k = 0; k < sss.size(); k++) {
-                                        String marId = sss.get(k).getMarker_id();
-                                        if (markerId.equals(marId)) {
-
-                                            selectedAdapterPosition = Integer.parseInt(sss.get(k).getPositionFromMain());
-                                            selectedChildAdapterPosition = k;
-                                        }
-                                    }
-
-                                }
-                                break;
-                            case "3":
-                                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.star_loc_icon_selected));
-                                lastSelected = false;
-                                firstSelected = true;
-                                isit = false;
-                                for (int j = 0 ; j< locationNameArrays.size(); j++) {
-                                    String marId = locationNameArrays.get(j).getFirstMarkerId();
-                                    if (markerId.equals(marId)) {
-                                        selectedAdapterPosition = j;
-                                    }
-                                }
-                                break;
-                            case "4":
-                                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.finish_loc_icon_selected));
-                                firstSelected = false;
-                                lastSelected = true;
-                                isit = false;
-                                for (int j = 0 ; j< locationNameArrays.size(); j++) {
-                                    String marId = locationNameArrays.get(j).getLastMarkerId();
-                                    if (markerId.equals(marId)) {
-                                        selectedAdapterPosition = j;
-                                    }
-                                }
-                                break;
-                        }
-                    }
+                        break;
                 }
 
-                locationAdapter.notifyDataSetChanged();
+                String id = marker.getId();
+                String allId = marker1.getId();
+                String markerId = allMarkerLists.get(i).getMarkerId();
 
-                return false;
+                if (id.equals(allId)) {
+
+                    switch (type) {
+                        case "1":
+                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_icon_active));
+                            lastSelected = false;
+                            firstSelected = true;
+                            isit = false;
+                            for (int j = 0 ; j< locationNameArrays.size(); j++) {
+                                String marId = locationNameArrays.get(j).getFirstMarkerId();
+                                if (markerId.equals(marId)) {
+                                    selectedAdapterPosition = j;
+                                }
+                            }
+                            break;
+                        case "2":
+                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.stop_loc_icon_selected));
+                            isit = true;
+                            firstSelected = false;
+                            lastSelected = false;
+                            for (int j = 0 ; j< locationNameArrays.size(); j++) {
+
+                                ArrayList<StoppedLocationTime> sss = locationNameArrays.get(j).getStoppedLocationTimes();
+                                for (int k = 0; k < sss.size(); k++) {
+                                    String marId = sss.get(k).getMarker_id();
+                                    if (markerId.equals(marId)) {
+
+                                        selectedAdapterPosition = Integer.parseInt(sss.get(k).getPositionFromMain());
+                                        selectedChildAdapterPosition = k;
+                                    }
+                                }
+
+                            }
+                            break;
+                        case "3":
+                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.star_loc_icon_selected));
+                            lastSelected = false;
+                            firstSelected = true;
+                            isit = false;
+                            for (int j = 0 ; j< locationNameArrays.size(); j++) {
+                                String marId = locationNameArrays.get(j).getFirstMarkerId();
+                                if (markerId.equals(marId)) {
+                                    selectedAdapterPosition = j;
+                                }
+                            }
+                            break;
+                        case "4":
+                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.finish_loc_icon_selected));
+                            firstSelected = false;
+                            lastSelected = true;
+                            isit = false;
+                            for (int j = 0 ; j< locationNameArrays.size(); j++) {
+                                String marId = locationNameArrays.get(j).getLastMarkerId();
+                                if (markerId.equals(marId)) {
+                                    selectedAdapterPosition = j;
+                                }
+                            }
+                            break;
+                    }
+                }
             }
+
+            locationAdapter.notifyDataSetChanged();
+
+            return false;
         });
     }
 
@@ -503,11 +509,11 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
 
     public void GpxInMap() {
 
-        waitProgress.show(getSupportFragmentManager(), "WaitBar");
-        waitProgress.setCancelable(false);
+//        waitProgress.show(getSupportFragmentManager(), "WaitBar");
+//        waitProgress.setCancelable(false);
         int marker_Id = 0;
         int position = -1;
-        String stringFIle = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + File.separator +  downloadFile;
+        String stringFIle =getExternalFilesDir(null) + File.separator +  downloadFile;
 
         File file = new File(stringFIle);
 
@@ -574,9 +580,9 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                     String lastLoc = "";
                     String firstTime = "";
                     String lastTime = "";
-                    String distance = "";
+                    String distance;
                     String calculateTime = "";
-                    String middleTime = "";
+                    String middleTime;
                     ArrayList<StoppedLocationTime> stoppedLocationTimes = new ArrayList<>();
 
 //                    if (gpxList.size() == timelist.size()) {
@@ -598,7 +604,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                                 first = sdfTime.parse(oneTime);
                                 last = sdfTime.parse(twoTime);
                             } catch (ParseException e) {
-                                e.printStackTrace();
+                                logger.log(Level.WARNING, e.getMessage(), e);
                             }
 
                             if (first != null && last != null) {
@@ -639,7 +645,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
 
                     }
 
-                    if (timelist.size() != 0) {
+                    if (!timelist.isEmpty()) {
                         firstTime = timelist.get(0);
                         lastTime = timelist.get(timelist.size()-1);
 
@@ -652,7 +658,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                             first = sdfTime.parse(firstTime);
                             last = sdfTime.parse(lastTime);
                         } catch (ParseException e) {
-                            e.printStackTrace();
+                            logger.log(Level.WARNING, e.getMessage(), e);
                         }
 
                         if (first != null && last != null) {
@@ -678,7 +684,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
 
                     int index = lengthh.indexOf(" ");
                     int index2 = lengthh.indexOf(" KM");
-                    String substr = "";
+                    String substr;
                     if (index < 0 && index2 < 0) {
                         substr = "0";
                     } else {
@@ -703,8 +709,6 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                     polyLindata.add(new PolyLindata(polyline,String.valueOf(a)));
 
 
-
-                    Double j = 0.0;
                     LatLng firstLatLng = null;
                     LatLng secondLatLng = null;
                     String firstMarkerId = "";
@@ -794,7 +798,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
 //                        System.out.println("Got It");
 //                    }
 //                } catch (IOException e) {
-//                    e.printStackTrace();
+//                    logger.log(Level.WARNING, e.getMessage(), e);
 //                }
 
 
@@ -817,7 +821,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
 
         int marker_Id = 0;
         int position = -1;
-        String stringFIle = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + File.separator +  todayFile;
+        String stringFIle = getExternalFilesDir(null) + File.separator +  todayFile;
 
         File file = new File(stringFIle);
 
@@ -881,9 +885,9 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                     String lastLoc = "";
                     String firstTime = "";
                     String lastTime = "";
-                    String distance = "";
+                    String distance;
                     String calculateTime = "";
-                    String middleTime = "";
+                    String middleTime;
 
                     ArrayList<StoppedLocationTime> stoppedLocationTimes = new ArrayList<>();
 
@@ -902,7 +906,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                                 first = sdfTime.parse(oneTime);
                                 last = sdfTime.parse(twoTime);
                             } catch (ParseException e) {
-                                e.printStackTrace();
+                                logger.log(Level.WARNING, e.getMessage(), e);
                             }
 
                             if (first != null && last != null) {
@@ -944,7 +948,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                     }
 
 
-                    if (timelist.size() != 0) {
+                    if (!timelist.isEmpty()) {
                         firstTime = timelist.get(0);
                         lastTime = timelist.get(timelist.size()-1);
 
@@ -957,7 +961,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                             first = sdfTime.parse(firstTime);
                             last = sdfTime.parse(lastTime);
                         } catch (ParseException e) {
-                            e.printStackTrace();
+                            logger.log(Level.WARNING, e.getMessage(), e);
                         }
 
                         if (first != null && last != null) {
@@ -982,7 +986,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
 
                     int index = lengthh.indexOf(" ");
                     int index2 = lengthh.indexOf(" KM");
-                    String substr = "";
+                    String substr;
                     if (index < 0 && index2 < 0) {
                         substr = "0";
                     } else {
@@ -1007,8 +1011,6 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                     polyLindata.add(new PolyLindata(polyline,String.valueOf(a)));
 
 
-
-                    Double j = 0.0;
                     LatLng firstLatLng = null;
                     LatLng secondLatLng = null;
                     String firstMarkerId = "";
@@ -1096,7 +1098,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
 //                        System.out.println("Got It");
 //                    }
 //                } catch (IOException e) {
-//                    e.printStackTrace();
+//                    logger.log(Level.WARNING, e.getMessage(), e);
 //                }
 
 
@@ -1122,7 +1124,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         waitProgress.setCancelable(false);
         int marker_Id = 0;
         int position = -1;
-        String stringFIle = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + File.separator +  testFile;
+        String stringFIle = getExternalFilesDir(null) + File.separator +  testFile;
 
         File file = new File(stringFIle);
 
@@ -1189,9 +1191,9 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                     String lastLoc = "";
                     String firstTime = "";
                     String lastTime = "";
-                    String distance = "";
+                    String distance;
                     String calculateTime = "";
-                    String middleTime = "";
+                    String middleTime;
                     ArrayList<StoppedLocationTime> stoppedLocationTimes = new ArrayList<>();
 
 //                    if (gpxList.size() == timelist.size()) {
@@ -1213,7 +1215,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                                 first = sdfTime.parse(oneTime);
                                 last = sdfTime.parse(twoTime);
                             } catch (ParseException e) {
-                                e.printStackTrace();
+                                logger.log(Level.WARNING, e.getMessage(), e);
                             }
 
                             if (first != null && last != null) {
@@ -1267,7 +1269,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                             first = sdfTime.parse(firstTime);
                             last = sdfTime.parse(lastTime);
                         } catch (ParseException e) {
-                            e.printStackTrace();
+                            logger.log(Level.WARNING, e.getMessage(), e);
                         }
 
                         if (first != null && last != null) {
@@ -1293,7 +1295,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
 
                     int index = lengthh.indexOf(" ");
                     int index2 = lengthh.indexOf(" KM");
-                    String substr = "";
+                    String substr;
                     if (index < 0 && index2 < 0) {
                         substr = "0";
                     } else {
@@ -1318,8 +1320,6 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                     polyLindata.add(new PolyLindata(polyline,String.valueOf(a)));
 
 
-
-                    Double j = 0.0;
                     LatLng firstLatLng = null;
                     LatLng secondLatLng = null;
                     String firstMarkerId = "";
@@ -1409,7 +1409,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
 //                        System.out.println("Got It");
 //                    }
 //                } catch (IOException e) {
-//                    e.printStackTrace();
+//                    logger.log(Level.WARNING, e.getMessage(), e);
 //                }
 
 
@@ -1434,6 +1434,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         try {
             List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
             if (Geocoder.isPresent()) {
+                assert addresses != null;
                 Address obj = addresses.get(0);
                 String adds = obj.getAddressLine(0);
                 String add = "Address from GeoCODE: ";
@@ -1466,9 +1467,412 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
             // TennisAppActivity.showDialog(add);
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.log(Level.WARNING, e.getMessage(), e);
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
             return null;
+        }
+    }
+
+    public void getTodayTimeLine() {
+        waitProgress.show(getSupportFragmentManager(), "WaitBar");
+        waitProgress.setCancelable(false);
+        conn = false;
+        connected = false;
+        trk = new ArrayList<>();
+        areaLists = new ArrayList<>();
+        tr_option = "1";
+
+        String offLocationUrl = api_url_front + "attendance/getNewOffLatLong?emp_id="+emp_id;
+        String trOptionUrl = api_url_front + "utility/getTrackerOption";
+        String url = api_url_front + "hrm_dashboard/getTodayTrackData?p_emp_id="+emp_id;
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, response -> {
+            conn = true;
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String items = jsonObject.getString("items");
+                String count = jsonObject.getString("count");
+                if (!count.equals("0")) {
+                    JSONArray array = new JSONArray(items);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject userImageInfo = array.getJSONObject(i);
+                        String lat = userImageInfo.getString("lat");
+                        String lng = userImageInfo.getString("lng");
+                        String MD_TIME = userImageInfo.getString("md_time");
+
+                        String wpt = "\t<wpt lat=\""+ lat +"\" lon=\""+ lng+"\">\n" +
+                                "\t\t<name>TTIT</name>\n" +
+                                "\t\t<time>"+MD_TIME+"</time>\n"+
+                                "\t</wpt>";
+                        trk.add(wpt);
+                    }
+                }
+                connected = true;
+                updateData();
+            } catch (JSONException e) {
+                connected = false;
+                logger.log(Level.WARNING, e.getMessage(), e);
+                updateData();
+            }
+        }, error -> {
+            conn = false;
+            connected = false;
+            logger.log(Level.WARNING, error.getMessage(), error);
+            updateData();
+        });
+
+        StringRequest trOptionReq = new StringRequest(Request.Method.GET, trOptionUrl, response -> {
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String items = jsonObject.getString("items");
+                String count = jsonObject.getString("count");
+                if (!count.equals("0")) {
+                    JSONArray array = new JSONArray(items);
+                    JSONObject info = array.getJSONObject(0);
+                    tr_option = info.getString("tr_option")
+                            .equals("null") ? "1" : info.getString("tr_option");
+                }
+                if (tr_option.equals("1")) {
+                    connected = true;
+                    updateData();
+                }
+                else {
+                    requestQueue.add(stringRequest);
+                }
+            } catch (JSONException e) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+                connected = false;
+                updateData();
+            }
+        }, error -> {
+            logger.log(Level.WARNING, error.getMessage(), error);
+            conn = false;
+            connected = false;
+            updateData();
+        });
+
+        StringRequest offLocReq = new StringRequest(Request.Method.GET, offLocationUrl, response -> {
+            conn = true;
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String items = jsonObject.getString("items");
+                String count = jsonObject.getString("count");
+                if (!count.equals("0")) {
+                    JSONArray array = new JSONArray(items);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject offLocInfo = array.getJSONObject(i);
+                        String coa_latitude = offLocInfo.getString("coa_latitude")
+                                .equals("null") ? null : offLocInfo.getString("coa_latitude");
+                        String coa_longitude = offLocInfo.getString("coa_longitude")
+                                .equals("null") ? null : offLocInfo.getString("coa_longitude");
+                        String coa_coverage = offLocInfo.getString("coa_coverage")
+                                .equals("null") ? null : offLocInfo.getString("coa_coverage");
+                        String co_id = offLocInfo.getString("coa_id")
+                                .equals("null") ? null : offLocInfo.getString("coa_id");
+                        String code = offLocInfo.getString("machine_code")
+                                .equals("null") ? null : offLocInfo.getString("machine_code");
+                        String can_give = offLocInfo.getString("can_give")
+                                .equals("null") ? "0" : offLocInfo.getString("can_give");
+                        String coa_name = offLocInfo.getString("coa_name")
+                                .equals("null") ? "" : offLocInfo.getString("coa_name");
+                        String coa_address = offLocInfo.getString("coa_address")
+                                .equals("null") ? "" : offLocInfo.getString("coa_address");
+
+                        areaLists.add(new AreaList(coa_latitude,coa_longitude,coa_coverage,co_id,code,can_give.equals("1"),coa_name,coa_address));
+
+                    }
+                }
+                requestQueue.add(trOptionReq);
+            }
+            catch (JSONException e) {
+                logger.log(Level.WARNING,e.getMessage(),e);
+                connected = false;
+                updateData();
+            }
+        }, error -> {
+            logger.log(Level.WARNING,error.getMessage(),error);
+            conn = false;
+            connected = false;
+            updateData();
+        });
+
+        requestQueue.add(offLocReq);
+    }
+
+    private void updateData() {
+        if (conn) {
+            if (connected) {
+                conn = false;
+                connected = false;
+
+                if (tr_option.equals("1")) {
+                    waitProgress.dismiss();
+                    GpxInMapToday();
+                }
+                else {
+                    for (int i = 0; i < areaLists.size(); i++) {
+                        if (areaLists.get(i).getLatitude() != null && areaLists.get(i).getLongitude() != null && areaLists.get(i).getCoverage() != null)  {
+                            LatLng wpt = new LatLng(Double.parseDouble(areaLists.get(i).getLatitude()), Double.parseDouble(areaLists.get(i).getLongitude()));
+                            mMap.addMarker(new MarkerOptions().position(wpt)
+                                    .title(areaLists.get(i).getCoa_name())
+                                    .snippet(areaLists.get(i).getCoa_address()).zIndex(9999)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.office_32_icon)));
+                            if (!areaLists.get(i).getCoverage().equals("0")) {
+                                mMap.addCircle(new CircleOptions()
+                                        .center(new LatLng(Float.parseFloat(areaLists.get(i).getLatitude()), Float.parseFloat(areaLists.get(i).getLongitude())))
+                                        .radius(Integer.parseInt(areaLists.get(i).getCoverage()))
+                                        .strokeColor(getColor(R.color.statusBarcoloRSecond))
+                                        .strokeWidth(4F)
+                                        .fillColor(ColorUtils.setAlphaComponent(
+                                                ContextCompat.getColor(this, R.color.statusBarcoloRSecond), 50)));
+                            }
+                        }
+                    }
+
+                    if (!trk.isEmpty()) {
+                        File myExternalFile = new File(getExternalFilesDir(null),downloadFile);
+
+                        try {
+                            GPXFileWriter.writeGpxFile("TTITGenerator", trk, myExternalFile);
+                            GpxInMap();
+                        }
+                        catch (IOException e) {
+                            waitProgress.dismiss();
+                            logger.log(Level.WARNING, e.getMessage(), e);
+                            locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
+                            locationView.setAdapter(locationAdapter);
+                            Toast.makeText(getApplicationContext(), "Failed to Read Data", Toast.LENGTH_SHORT).show();
+                            noRecordMsg.setVisibility(View.VISIBLE);
+                        }
+                    }
+                    else {
+                        waitProgress.dismiss();
+                        locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
+                        locationView.setAdapter(locationAdapter);
+//                    Toast.makeText(getApplicationContext(), "No Record Found", Toast.LENGTH_SHORT).show();
+                        noRecordMsg.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+            else {
+                waitProgress.dismiss();
+                trk = new ArrayList<>();
+                wptList = new ArrayList<>();
+                multiGpxList = new ArrayList<>();
+                locationNameArrays = new ArrayList<>();
+                polyLindata = new ArrayList<>();
+                markerData = new ArrayList<>();
+
+                locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
+                locationView.setAdapter(locationAdapter);
+                AlertDialog dialog = new AlertDialog.Builder(TimeLineActivity.this)
+                        .setMessage("There is a network issue in the server. Please Try later")
+                        .setPositiveButton("Retry", null)
+                        .setNegativeButton("Cancel", null)
+                        .show();
+
+                dialog.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
+                Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                positive.setOnClickListener(v -> {
+
+                    getTodayTimeLine();
+                    dialog.dismiss();
+                });
+
+                Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                negative.setOnClickListener(v -> dialog.dismiss());
+            }
+        }
+        else {
+            waitProgress.dismiss();
+            trk = new ArrayList<>();
+            wptList = new ArrayList<>();
+            multiGpxList = new ArrayList<>();
+            locationNameArrays = new ArrayList<>();
+            polyLindata = new ArrayList<>();
+            markerData = new ArrayList<>();
+
+            locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
+            locationView.setAdapter(locationAdapter);
+            AlertDialog dialog = new AlertDialog.Builder(TimeLineActivity.this)
+                    .setMessage("Please Check Your Internet Connection")
+                    .setPositiveButton("Retry", null)
+                    .setNegativeButton("Cancel", null)
+                    .show();
+
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
+            Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            positive.setOnClickListener(v -> {
+
+                getTodayTimeLine();
+                dialog.dismiss();
+            });
+
+            Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            negative.setOnClickListener(v -> dialog.dismiss());
+        }
+    }
+
+    public void getTodayDATA() {
+        waitProgress.show(getSupportFragmentManager(), "WaitBar");
+        waitProgress.setCancelable(false);
+        conn = false;
+        connected = false;
+        trk = new ArrayList<>();
+
+        String url = api_url_front + "hrm_dashboard/getTodayTrackData?p_emp_id="+emp_id;
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, response -> {
+            conn = true;
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String items = jsonObject.getString("items");
+                String count = jsonObject.getString("count");
+                if (!count.equals("0")) {
+                    JSONArray array = new JSONArray(items);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject userImageInfo = array.getJSONObject(i);
+                        String lat = userImageInfo.getString("lat");
+                        String lng = userImageInfo.getString("lng");
+                        String MD_TIME = userImageInfo.getString("md_time");
+
+                        String wpt = "\t<wpt lat=\""+ lat +"\" lon=\""+ lng+"\">\n" +
+                                "\t\t<name>TTIT</name>\n" +
+                                "\t\t<time>"+MD_TIME+"</time>\n"+
+                                "\t</wpt>";
+                        trk.add(wpt);
+                    }
+                }
+                connected = true;
+                updateTodayData();
+            } catch (JSONException e) {
+                connected = false;
+                logger.log(Level.WARNING, e.getMessage(), e);
+                updateTodayData();
+            }
+        }, error -> {
+            conn = false;
+            connected = false;
+            logger.log(Level.WARNING, error.getMessage(), error);
+            updateTodayData();
+        });
+
+        requestQueue.add(stringRequest);
+    }
+
+    private void updateTodayData() {
+        if (conn) {
+            if (connected) {
+                conn = false;
+                connected = false;
+
+                for (int i = 0; i < areaLists.size(); i++) {
+                    if (areaLists.get(i).getLatitude() != null && areaLists.get(i).getLongitude() != null && areaLists.get(i).getCoverage() != null)  {
+                        LatLng wpt = new LatLng(Double.parseDouble(areaLists.get(i).getLatitude()), Double.parseDouble(areaLists.get(i).getLongitude()));
+                        mMap.addMarker(new MarkerOptions().position(wpt)
+                                .title(areaLists.get(i).getCoa_name())
+                                .snippet(areaLists.get(i).getCoa_address()).zIndex(9999)
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.office_32_icon)));
+                        if (!areaLists.get(i).getCoverage().equals("0")) {
+                            mMap.addCircle(new CircleOptions()
+                                    .center(new LatLng(Float.parseFloat(areaLists.get(i).getLatitude()), Float.parseFloat(areaLists.get(i).getLongitude())))
+                                    .radius(Integer.parseInt(areaLists.get(i).getCoverage()))
+                                    .strokeColor(getColor(R.color.statusBarcoloRSecond))
+                                    .strokeWidth(4F)
+                                    .fillColor(ColorUtils.setAlphaComponent(
+                                            ContextCompat.getColor(this, R.color.statusBarcoloRSecond), 50)));
+                        }
+                    }
+                }
+
+                if (!trk.isEmpty()) {
+                    File myExternalFile = new File(getExternalFilesDir(null),downloadFile);
+
+                    try {
+                        GPXFileWriter.writeGpxFile("TTITGenerator", trk, myExternalFile);
+                        GpxInMap();
+                    }
+                    catch (IOException e) {
+                        waitProgress.dismiss();
+                        logger.log(Level.WARNING, e.getMessage(), e);
+                        locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
+                        locationView.setAdapter(locationAdapter);
+                        Toast.makeText(getApplicationContext(), "Failed to Read Data", Toast.LENGTH_SHORT).show();
+                        noRecordMsg.setVisibility(View.VISIBLE);
+                    }
+                }
+                else {
+                    waitProgress.dismiss();
+                    locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
+                    locationView.setAdapter(locationAdapter);
+//                    Toast.makeText(getApplicationContext(), "No Record Found", Toast.LENGTH_SHORT).show();
+                    noRecordMsg.setVisibility(View.VISIBLE);
+                }
+            }
+            else {
+                waitProgress.dismiss();
+                trk = new ArrayList<>();
+                wptList = new ArrayList<>();
+                multiGpxList = new ArrayList<>();
+                locationNameArrays = new ArrayList<>();
+                polyLindata = new ArrayList<>();
+                markerData = new ArrayList<>();
+
+                locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
+                locationView.setAdapter(locationAdapter);
+                AlertDialog dialog = new AlertDialog.Builder(TimeLineActivity.this)
+                        .setMessage("There is a network issue in the server. Please Try later")
+                        .setPositiveButton("Retry", null)
+                        .setNegativeButton("Cancel", null)
+                        .show();
+
+                dialog.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
+                Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                positive.setOnClickListener(v -> {
+
+                    getTodayDATA();
+                    dialog.dismiss();
+                });
+
+                Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                negative.setOnClickListener(v -> dialog.dismiss());
+            }
+        }
+        else {
+            waitProgress.dismiss();
+            trk = new ArrayList<>();
+            wptList = new ArrayList<>();
+            multiGpxList = new ArrayList<>();
+            locationNameArrays = new ArrayList<>();
+            polyLindata = new ArrayList<>();
+            markerData = new ArrayList<>();
+
+            locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
+            locationView.setAdapter(locationAdapter);
+            AlertDialog dialog = new AlertDialog.Builder(TimeLineActivity.this)
+                    .setMessage("Please Check Your Internet Connection")
+                    .setPositiveButton("Retry", null)
+                    .setNegativeButton("Cancel", null)
+                    .show();
+
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
+            Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            positive.setOnClickListener(v -> {
+
+                getTodayDATA();
+                dialog.dismiss();
+            });
+
+            Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            negative.setOnClickListener(v -> dialog.dismiss());
         }
     }
 
@@ -1488,8 +1892,8 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                     polyline.setWidth(30);
                     int size = polyline.getPoints().size();
                     size = size / 2;
-                    Double latitude = polyline.getPoints().get(size).latitude;
-                    Double longitude = polyline.getPoints().get(size).longitude;
+                    double latitude = polyline.getPoints().get(size).latitude;
+                    double longitude = polyline.getPoints().get(size).longitude;
                     LatLng gpx = new LatLng(latitude, longitude);
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(gpx, 14));
                     Toast.makeText(getApplicationContext(),distance,Toast.LENGTH_SHORT).show();
@@ -1532,79 +1936,102 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         //mMap.setOnPolylineClickListener(this);
     }
 
-    public boolean isConnected () {
-        boolean connected = false;
-        boolean isMobile = false;
-        try {
-            ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo nInfo = cm.getActiveNetworkInfo();
-            connected = nInfo != null && nInfo.isAvailable() && nInfo.isConnected();
-            return connected;
-        } catch (Exception e) {
-            Log.e("Connectivity Exception", e.getMessage());
-        }
-        return connected;
-    }
+    public void getTimeLine() {
+        waitProgress.show(getSupportFragmentManager(), "WaitBar");
+        waitProgress.setCancelable(false);
+        conn = false;
+        connected = false;
 
-    public boolean isOnline () {
+        String url = api_url_front + "tracker/getTimeLineByDate?emp_id="+emp_id+"&selected_date="+selectedDate;
 
-        Runtime runtime = Runtime.getRuntime();
-        try {
-            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
-            int exitValue = ipProcess.waitFor();
-            return (exitValue == 0);
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
 
-        return false;
-    }
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, response -> {
+            conn = true;
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String items = jsonObject.getString("items");
+                String count = jsonObject.getString("count");
+                if (!count.equals("0")) {
+                    JSONArray array = new JSONArray(items);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject userImageInfo = array.getJSONObject(i);
+                        String elr_file_name = userImageInfo.getString("elr_file_name");
+                        String elr_filetype = userImageInfo.getString("elr_filetype");
+                        String elr_location_file = userImageInfo.getString("elr_location_file");
 
-    public class Check extends AsyncTask<Void, Void, Void> {
+                        String fileName = elr_file_name + elr_filetype;
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
+                        if (elr_location_file.equals("null") || elr_location_file.isEmpty()) {
+                            System.out.println("NULL DATA");
+                            blobNotNull = false;
+                        } else {
+                            File myExternalFile = new File(getExternalFilesDir(null),downloadFile);
+                            byte[] decodedString = Base64.decode(elr_location_file, Base64.DEFAULT);
 
-            waitProgress.show(getSupportFragmentManager(), "WaitBar");
-            waitProgress.setCancelable(false);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            if (isConnected() && isOnline()) {
-
-                GetData();
-                if (connected) {
-                    conn = true;
-                    message = "Internet Connected";
+                            try {
+                                FileOutputStream fos = new FileOutputStream(myExternalFile);
+                                fos.write(decodedString);
+                                fos.close();
+                                blobNotNull = true;
+                            }
+                            catch (Exception e) {
+                                logger.log(Level.WARNING, e.getMessage(), e);
+                                blobNotNull = false;
+                            }
+                        }
+                    }
                 }
-
-
-            } else {
-                conn = false;
-                message = "Not Connected";
+                connected = true;
+                updateAfterGettingTimeLine();
+            } catch (JSONException e) {
+                connected = false;
+                logger.log(Level.WARNING, e.getMessage(), e);
+                updateAfterGettingTimeLine();
             }
+        }, error -> {
+            conn = false;
+            connected = false;
+            logger.log(Level.WARNING, error.getMessage(), error);
+            updateAfterGettingTimeLine();
+        });
 
-            return null;
-        }
+        requestQueue.add(stringRequest);
+    }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-
-            if (conn) {
-
-                waitProgress.dismiss();
+    private void updateAfterGettingTimeLine() {
+        if (conn) {
+            if (connected) {
                 conn = false;
                 connected = false;
 
                 System.out.println("GPX File Created");
 
+                if (!tr_option.equals("1")) {
+                    for (int i = 0; i < areaLists.size(); i++) {
+                        if (areaLists.get(i).getLatitude() != null && areaLists.get(i).getLongitude() != null && areaLists.get(i).getCoverage() != null) {
+                            LatLng wpt = new LatLng(Double.parseDouble(areaLists.get(i).getLatitude()), Double.parseDouble(areaLists.get(i).getLongitude()));
+                            mMap.addMarker(new MarkerOptions().position(wpt)
+                                    .title(areaLists.get(i).getCoa_name())
+                                    .snippet(areaLists.get(i).getCoa_address()).zIndex(9999)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.office_32_icon)));
+                            if (!areaLists.get(i).getCoverage().equals("0")) {
+                                mMap.addCircle(new CircleOptions()
+                                        .center(new LatLng(Float.parseFloat(areaLists.get(i).getLatitude()), Float.parseFloat(areaLists.get(i).getLongitude())))
+                                        .radius(Integer.parseInt(areaLists.get(i).getCoverage()))
+                                        .strokeColor(getColor(R.color.statusBarcoloRSecond))
+                                        .strokeWidth(4F)
+                                        .fillColor(ColorUtils.setAlphaComponent(
+                                                ContextCompat.getColor(this, R.color.statusBarcoloRSecond), 50)));
+                            }
+                        }
+                    }
+                }
+
                 if (blobNotNull) {
                     GpxInMap();
                 } else {
+                    waitProgress.dismiss();
                     locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
                     locationView.setAdapter(locationAdapter);
 //                    Toast.makeText(getApplicationContext(), "No Record Found", Toast.LENGTH_SHORT).show();
@@ -1612,12 +2039,10 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                 }
 
                 blobNotNull = false;
-
-
-
-
-            } else {
+            }
+            else {
                 waitProgress.dismiss();
+                trk = new ArrayList<>();
                 wptList = new ArrayList<>();
                 multiGpxList = new ArrayList<>();
                 locationNameArrays = new ArrayList<>();
@@ -1626,73 +2051,217 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
 
                 locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
                 locationView.setAdapter(locationAdapter);
-
-                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
                 AlertDialog dialog = new AlertDialog.Builder(TimeLineActivity.this)
-                        .setMessage("Internet not Connected")
+                        .setMessage("There is a network issue in the server. Please Try later")
                         .setPositiveButton("Retry", null)
-                        .setNegativeButton("Cancel",null)
+                        .setNegativeButton("Cancel", null)
                         .show();
 
-
+                dialog.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
                 Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                positive.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                positive.setOnClickListener(v -> {
 
-                        new Check().execute();
-                        dialog.dismiss();
-                    }
+                    getTimeLine();
+                    dialog.dismiss();
                 });
 
                 Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-                negative.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
+                negative.setOnClickListener(v -> dialog.dismiss());
             }
+        }
+        else {
+            waitProgress.dismiss();
+            trk = new ArrayList<>();
+            wptList = new ArrayList<>();
+            multiGpxList = new ArrayList<>();
+            locationNameArrays = new ArrayList<>();
+            polyLindata = new ArrayList<>();
+            markerData = new ArrayList<>();
+
+            locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
+            locationView.setAdapter(locationAdapter);
+            AlertDialog dialog = new AlertDialog.Builder(TimeLineActivity.this)
+                    .setMessage("Please Check Your Internet Connection")
+                    .setPositiveButton("Retry", null)
+                    .setNegativeButton("Cancel", null)
+                    .show();
+
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
+            Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            positive.setOnClickListener(v -> {
+
+                getTimeLine();
+                dialog.dismiss();
+            });
+
+            Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            negative.setOnClickListener(v -> dialog.dismiss());
         }
     }
 
-    public void GetData() {
-
-        try {
-            this.connection = createConnection();
-
-            PreparedStatement ps = connection.prepareStatement("Select ELR_FILE_NAME, ELR_FILETYPE , ELR_LOCATION_FILE from EMP_LOCATION_RECORD where ELR_EMP_ID = "+emp_id+" AND ELR_DATE = TO_DATE('"+selectedDate+"','DD-MON-YY')");
-
-            ResultSet resultSet = ps.executeQuery();
-            while (resultSet.next()) {
-                Blob b = resultSet.getBlob(3);
-                String fileName = resultSet.getString(1)+resultSet.getString(2);
-
-                if (b != null && b.length() != 0) {
-                    System.out.println("BLOB paise");
-                    File myExternalFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),downloadFile);
-
-                    InputStream r = b.getBinaryStream();
-                    FileWriter fw=new FileWriter(myExternalFile);
-                    int i;
-                    while((i=r.read())!=-1)
-                        fw.write((char)i);
-                    fw.close();
-                    blobNotNull = true;
-                } else {
-                    System.out.println("BLOB pai nai");
-                    blobNotNull = false;
-                }
-
-            }
-            connected = true;
-            connection.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
+//    public boolean isConnected () {
+//        boolean connected = false;
+//        boolean isMobile = false;
+//        try {
+//            ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+//            NetworkInfo nInfo = cm.getActiveNetworkInfo();
+//            connected = nInfo != null && nInfo.isAvailable() && nInfo.isConnected();
+//            return connected;
+//        } catch (Exception e) {
+//            Log.e("Connectivity Exception", e.getMessage());
+//        }
+//        return connected;
+//    }
+//
+//    public boolean isOnline () {
+//
+//        Runtime runtime = Runtime.getRuntime();
+//        try {
+//            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+//            int exitValue = ipProcess.waitFor();
+//            return (exitValue == 0);
+//        } catch (IOException | InterruptedException e) {
+//            logger.log(Level.WARNING, e.getMessage(), e);
+//        }
+//
+//        return false;
+//    }
+//
+//    public class Check extends AsyncTask<Void, Void, Void> {
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//
+//            waitProgress.show(getSupportFragmentManager(), "WaitBar");
+//            waitProgress.setCancelable(false);
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//            if (isConnected() && isOnline()) {
+//
+//                GetData();
+//                if (connected) {
+//                    conn = true;
+//                    message = "Internet Connected";
+//                }
+//
+//
+//            } else {
+//                conn = false;
+//                message = "Not Connected";
+//            }
+//
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void aVoid) {
+//            super.onPostExecute(aVoid);
+//
+//
+//            if (conn) {
+//
+//                waitProgress.dismiss();
+//                conn = false;
+//                connected = false;
+//
+//                System.out.println("GPX File Created");
+//
+//                if (blobNotNull) {
+//                    GpxInMap();
+//                } else {
+//                    locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
+//                    locationView.setAdapter(locationAdapter);
+////                    Toast.makeText(getApplicationContext(), "No Record Found", Toast.LENGTH_SHORT).show();
+//                    noRecordMsg.setVisibility(View.VISIBLE);
+//                }
+//
+//                blobNotNull = false;
+//
+//
+//
+//
+//            } else {
+//                waitProgress.dismiss();
+//                wptList = new ArrayList<>();
+//                multiGpxList = new ArrayList<>();
+//                locationNameArrays = new ArrayList<>();
+//                polyLindata = new ArrayList<>();
+//                markerData = new ArrayList<>();
+//
+//                locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
+//                locationView.setAdapter(locationAdapter);
+//
+//                Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+//                AlertDialog dialog = new AlertDialog.Builder(TimeLineActivity.this)
+//                        .setMessage("Internet not Connected")
+//                        .setPositiveButton("Retry", null)
+//                        .setNegativeButton("Cancel",null)
+//                        .show();
+//
+//
+//                Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+//                positive.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//
+//                        new Check().execute();
+//                        dialog.dismiss();
+//                    }
+//                });
+//
+//                Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+//                negative.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//            }
+//        }
+//    }
+//
+//    public void GetData() {
+//
+//        try {
+//            this.connection = createConnection();
+//
+//            PreparedStatement ps = connection.prepareStatement("Select ELR_FILE_NAME, ELR_FILETYPE , ELR_LOCATION_FILE from EMP_LOCATION_RECORD where ELR_EMP_ID = "+emp_id+" AND ELR_DATE = TO_DATE('"+selectedDate+"','DD-MON-YY')");
+//
+//            ResultSet resultSet = ps.executeQuery();
+//            while (resultSet.next()) {
+//                Blob b = resultSet.getBlob(3);
+//                String fileName = resultSet.getString(1)+resultSet.getString(2);
+//
+//                if (b != null && b.length() != 0) {
+//                    System.out.println("BLOB paise");
+//                    File myExternalFile = new File(getExternalFilesDir(null),downloadFile);
+//
+//                    InputStream r = b.getBinaryStream();
+//                    FileWriter fw=new FileWriter(myExternalFile);
+//                    int i;
+//                    while((i=r.read())!=-1)
+//                        fw.write((char)i);
+//                    fw.close();
+//                    blobNotNull = true;
+//                } else {
+//                    System.out.println("BLOB pai nai");
+//                    blobNotNull = false;
+//                }
+//
+//            }
+//            connected = true;
+//            connection.close();
+//
+//        } catch (Exception e) {
+//            logger.log(Level.WARNING, e.getMessage(), e);
+//        }
+//
+//    }
 
     public static void scrollToView (final NestedScrollView scrollView, final View view) {
         view.requestFocus();
@@ -1700,19 +2269,16 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         scrollView.getHitRect(scrollBounds);
 
         //if (!view.getLocalVisibleRect(scrollBounds)) {
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                   // scrollView.smoothScrollTo(0, view.getBottom());
-                    int vTop = view.getTop();
-                    int vBottom = view.getBottom();
-                    int sHeight = scrollView.getBottom();
-                    System.out.println("View Top: "+vTop);
-                    System.out.println("View Bottom: " + vBottom);
-                    System.out.println("Scroll Bottom: "+ sHeight);
-                    //scrollView.smoothScrollTo(0,((vTop + vBottom) / 2) - (sHeight / 2) );
-                    scrollView.smoothScrollTo(0,((vTop + vBottom - sHeight) / 2));
-                }
+            new Handler().post(() -> {
+               // scrollView.smoothScrollTo(0, view.getBottom());
+                int vTop = view.getTop();
+                int vBottom = view.getBottom();
+                int sHeight = scrollView.getBottom();
+                System.out.println("View Top: "+vTop);
+                System.out.println("View Bottom: " + vBottom);
+                System.out.println("Scroll Bottom: "+ sHeight);
+                //scrollView.smoothScrollTo(0,((vTop + vBottom) / 2) - (sHeight / 2) );
+                scrollView.smoothScrollTo(0,((vTop + vBottom - sHeight) / 2));
             });
         //}
 
@@ -1734,19 +2300,16 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         scrollView.getHitRect(scrollBounds);
 
         //if (!view.getLocalVisibleRect(scrollBounds)) {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                // scrollView.smoothScrollTo(0, view.getBottom());
-                int vTop = view.getTop()+viewTop;
-                int vBottom = view.getBottom()+viewBottom;
-                int sHeight = scrollView.getBottom();
-                System.out.println("View Top: "+vTop);
-                System.out.println("View Bottom: " + vBottom);
-                System.out.println("Scroll Bottom: "+ sHeight);
-                //scrollView.smoothScrollTo(0,((vTop + vBottom) / 2) - (sHeight / 2) );
-                scrollView.smoothScrollTo(0,((vTop + vBottom - sHeight) / 2));
-            }
+        new Handler().post(() -> {
+            // scrollView.smoothScrollTo(0, view.getBottom());
+            int vTop = view.getTop()+viewTop;
+            int vBottom = view.getBottom()+viewBottom;
+            int sHeight = scrollView.getBottom();
+            System.out.println("View Top: "+vTop);
+            System.out.println("View Bottom: " + vBottom);
+            System.out.println("Scroll Bottom: "+ sHeight);
+            //scrollView.smoothScrollTo(0,((vTop + vBottom) / 2) - (sHeight / 2) );
+            scrollView.smoothScrollTo(0,((vTop + vBottom - sHeight) / 2));
         });
         //}
 

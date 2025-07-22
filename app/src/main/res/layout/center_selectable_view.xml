@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/statusBarcoloRSecond"
+            android:padding="16dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:id="@+id/icon_select_center"
+                android:layout_centerVertical="true"
+                android:src="@drawable/business_24"
+                app:tint="@color/white"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="6dp"
+                android:paddingTop="1dp"
+                android:paddingBottom="0dp"
+                android:layout_toEndOf="@+id/icon_select_center"
+                android:layout_toStartOf="@+id/close_center_choice"
+                android:fontFamily="@font/patua_one"
+                android:text="SELECT CENTER"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                tools:ignore="HardcodedText" />
+
+            <ImageView
+                android:id="@+id/close_center_choice"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/close_24"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                app:tint="@color/white"/>
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/multi_center_notified_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="We have found Multiple Center for your login credentials. Please Select One to proceed."
+            android:layout_margin="10dp"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center"
+            tools:ignore="HardcodedText" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/center_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"/>
+
+    </LinearLayout>
+
+
+    <!--    <com.google.android.material.progressindicator.CircularProgressIndicator-->
+    <!--        android:id="@+id/progress_indicator_center_select"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_centerVertical="true"-->
+    <!--        android:layout_marginTop="300dp"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:indeterminate="true"-->
+    <!--        android:layout_gravity="center"/>-->
+
+</RelativeLayout>

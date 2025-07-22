@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/white"
+    android:id="@+id/att_report_overall_view"
+    android:weightSum="1.15">
+
+    <TextView
+        android:id="@+id/date_0f_att"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight=".21"
+        android:fontFamily="@font/poppins"
+        android:gravity="center"
+        android:padding="2dp"
+        android:text=""
+        android:textColor="@color/black"
+        android:textSize="@dimen/_7sdp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/black" />
+
+    <LinearLayout
+        android:id="@+id/status_of_att_lay"
+        android:layout_width="0dp"
+        android:layout_weight=".17"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/status_of_att"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:fontFamily="@font/poppins"
+            android:textSize="@dimen/_7sdp"
+            android:padding="2dp"
+            android:textColor="@color/black"
+            android:text=""/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/black" />
+
+    <TextView
+        android:id="@+id/shift_of_att"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight=".17"
+        android:gravity="center"
+        android:padding="2dp"
+        android:layout_gravity="center"
+        android:text=""
+        android:fontFamily="@font/poppins"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_7sdp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/black" />
+
+    <TextView
+        android:id="@+id/punch_loc_of_att"
+        android:layout_width="0dp"
+        android:textSize="@dimen/_7sdp"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:fontFamily="@font/poppins"
+        android:padding="2dp"
+        android:textColor="@color/black"
+        android:layout_weight=".2"
+        android:text=""/>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/black" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight=".2"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/in_time_of_att"
+            android:layout_marginTop="2dp"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/_7sdp"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:fontFamily="@font/poppins"
+            android:paddingTop="2dp"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:textColor="@color/black"
+            android:text=""/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/black" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight=".2"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_marginTop="2dp"
+            android:id="@+id/out_time_of_att"
+            android:layout_width="match_parent"
+            android:textSize="@dimen/_7sdp"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:paddingTop="2dp"
+            android:paddingStart="2dp"
+            android:fontFamily="@font/poppins"
+            android:paddingEnd="2dp"
+            android:textColor="@color/black"
+            android:text=""/>
+
+
+    </LinearLayout>
+
+</LinearLayout>

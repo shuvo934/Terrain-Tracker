@@ -1,7 +1,6 @@
 package ttit.com.shuvo.terraintracker.MainPage.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.sql.Blob;
-import java.sql.Connection;
 import java.util.ArrayList;
 
 import ttit.com.shuvo.terraintracker.MainPage.lists.AttenReportList;
@@ -26,10 +23,6 @@ public class AttenReportAdapter extends RecyclerView.Adapter<AttenReportAdapter.
     public ArrayList<AttenReportList> attenReportLists;
 
     public Context myContext;
-
-    public static Blob blobFromAdapter;
-    String downloadFile = "Downloaded_GPX.gpx";
-    private Connection connection;
 
 
     public AttenReportAdapter(ArrayList<AttenReportList> attenReportLists, Context myContext) {
@@ -42,8 +35,7 @@ public class AttenReportAdapter extends RecyclerView.Adapter<AttenReportAdapter.
     @Override
     public AttenHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(myContext).inflate(R.layout.att_rep_list_view, parent, false);
-        AttenHolder ammvh = new AttenHolder(v);
-        return ammvh;
+        return new AttenHolder(v);
     }
 
     @Override
@@ -204,14 +196,12 @@ public class AttenReportAdapter extends RecyclerView.Adapter<AttenReportAdapter.
             outLoc = itemView.findViewById(R.id.out_location);
             dayName = itemView.findViewById(R.id.day_name_0f_att);
 
-            inLoc.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                    String in_lat = attenReportLists.get(getAdapterPosition()).getInLat();
-                    String in_lon = attenReportLists.get(getAdapterPosition()).getInLon();
-                    String in_time = inTime.getText().toString();
-                    String dd = date.getText().toString();
+            inLoc.setOnClickListener(v -> {
+                AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                String in_lat = attenReportLists.get(getAdapterPosition()).getInLat();
+                String in_lon = attenReportLists.get(getAdapterPosition()).getInLon();
+                String in_time = inTime.getText().toString();
+                String dd = date.getText().toString();
 
 
 //                    Intent intent = new Intent(myContext, MapsActivity.class);
@@ -221,18 +211,15 @@ public class AttenReportAdapter extends RecyclerView.Adapter<AttenReportAdapter.
 //                    intent.putExtra("date", dd);
 //                    intent.putExtra("status","Attendance In Time");
 //                    activity.startActivity(intent);
-                }
             });
 
-            outLoc.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                    String out_lat = attenReportLists.get(getAdapterPosition()).getOutLat();
-                    String out_lon = attenReportLists.get(getAdapterPosition()).getOutLon();
+            outLoc.setOnClickListener(v -> {
+                AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                String out_lat = attenReportLists.get(getAdapterPosition()).getOutLat();
+                String out_lon = attenReportLists.get(getAdapterPosition()).getOutLon();
 
-                    String out_time = out.getText().toString();
-                    String dd = date.getText().toString();
+                String out_time = out.getText().toString();
+                String dd = date.getText().toString();
 
 
 //                    Intent intent = new Intent(myContext, MapsActivity.class);
@@ -242,7 +229,6 @@ public class AttenReportAdapter extends RecyclerView.Adapter<AttenReportAdapter.
 //                    intent.putExtra("date", dd);
 //                    intent.putExtra("status","Attendance Out Time");
 //                    activity.startActivity(intent);
-                }
             });
 
         }

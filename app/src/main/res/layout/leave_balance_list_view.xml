@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/white"
+    android:id="@+id/att_report_overall_view"
+    android:weightSum="1.1">
+
+    <TextView
+        android:id="@+id/leave_category"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight=".25"
+        android:fontFamily="@font/poppins"
+        android:gravity="center"
+        android:padding="2dp"
+        android:text=""
+        android:textColor="@color/black"
+        android:textSize="@dimen/_7sdp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/black" />
+
+    <TextView
+        android:id="@+id/opening_qty"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:textSize="@dimen/_7sdp"
+        android:gravity="center"
+        android:fontFamily="@font/poppins"
+        android:padding="2dp"
+        android:textColor="@color/black"
+        android:layout_weight=".15"
+        android:text=""/>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/black" />
+
+    <TextView
+        android:id="@+id/earn"
+        android:layout_width="0dp"
+        android:textSize="@dimen/_7sdp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:fontFamily="@font/poppins"
+        android:padding="2dp"
+        android:textColor="@color/black"
+        android:layout_weight=".15"
+        android:text=""/>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/black" />
+
+    <TextView
+        android:id="@+id/consumed"
+        android:layout_width="0dp"
+        android:textSize="@dimen/_7sdp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="2dp"
+        android:fontFamily="@font/poppins"
+        android:textColor="@color/black"
+        android:layout_weight=".13"
+        android:text=""/>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/black" />
+
+    <TextView
+        android:id="@+id/transferred"
+        android:layout_width="0dp"
+        android:textSize="@dimen/_7sdp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="2dp"
+        android:fontFamily="@font/poppins"
+        android:textColor="@color/black"
+        android:layout_weight=".14"
+        android:text=""/>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/black" />
+
+    <TextView
+        android:id="@+id/cash_taken"
+        android:layout_width="0dp"
+        android:textSize="@dimen/_7sdp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:fontFamily="@font/poppins"
+        android:padding="2dp"
+        android:textColor="@color/black"
+        android:layout_weight=".13"
+        android:text=""/>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/black" />
+
+    <TextView
+        android:id="@+id/balance_qty"
+        android:layout_width="0dp"
+        android:textSize="@dimen/_7sdp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:fontFamily="@font/poppins"
+        android:gravity="center"
+        android:padding="2dp"
+        android:textColor="@color/black"
+        android:layout_weight=".15"
+        android:text=""/>
+
+</LinearLayout>

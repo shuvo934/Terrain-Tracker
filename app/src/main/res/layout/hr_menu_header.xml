@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/statusBarcoloRSecond"
+    android:padding="@dimen/_12sdp">
+
+    <ImageView
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:id="@+id/hr_logo"
+        android:layout_centerVertical="true"
+        android:src="@drawable/hr_icon"
+        app:tint="@color/white"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_4sdp"
+        android:layout_toEndOf="@+id/hr_logo"
+        android:paddingTop="@dimen/_2sdp"
+        android:layout_toStartOf="@+id/close_icon_hr_menu"
+        android:fontFamily="@font/poppins_bold"
+        android:text="HR Menu"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_14sdp"
+        tools:ignore="HardcodedText" />
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/close_icon_hr_menu"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/double_arrow_right"
+        app:tint="@color/white"/>
+
+</RelativeLayout>

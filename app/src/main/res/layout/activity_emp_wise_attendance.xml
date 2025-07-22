@@ -1,0 +1,1263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/statusBarcoloRSecond"
+    android:fitsSystemWindows="true"
+    tools:context=".attendance.EmpWiseAttendance">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white">
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/emp_wise_attendance_full_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white">
+
+        <RelativeLayout
+            android:id="@+id/app_bar_emp_wise_attendance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/statusBarcoloRSecond"
+            android:padding="@dimen/_12sdp">
+
+            <ImageView
+                android:layout_width="@dimen/_19sdp"
+                android:layout_height="@dimen/_19sdp"
+                android:id="@+id/back_logo_of_emp_wise_attendance"
+                android:layout_centerVertical="true"
+                android:src="@drawable/arrow_back"
+                app:tint="@color/white"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginEnd="@dimen/_4sdp"
+                android:layout_toEndOf="@+id/back_logo_of_emp_wise_attendance"
+                android:layout_toStartOf="@+id/branch_selection_for_emp_att"
+                android:fontFamily="@font/poppins_bold"
+                android:text="@string/emp_att_bar_name"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_14sdp" />
+
+            <LinearLayout
+                android:id="@+id/branch_selection_for_emp_att"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/_16sdp"
+                    android:layout_height="@dimen/_18sdp"
+                    android:src="@drawable/business_24"
+                    app:tint="@color/white"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/selected_branch_name_emp_att"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:text="None"
+                    android:fontFamily="@font/archivo_bold"
+                    android:textSize="@dimen/_8sdp"
+                    android:layout_gravity="center"
+                    android:padding="@dimen/_2sdp"
+                    android:layout_marginStart="@dimen/_2sdp"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:layout_marginStart="@dimen/_4sdp"
+                android:layout_marginEnd="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp"
+                android:weightSum="10"
+                android:orientation="horizontal">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_weight="5"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="10dp"
+                    android:layout_gravity="center"
+                    app:cardElevation="2dp"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:layout_marginBottom="@dimen/_2sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
+                    android:layout_marginEnd="@dimen/_4sdp"
+                    app:cardBackgroundColor="@color/white">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/statusBarcoloRSecond">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/spinner_layout_division_select_for_emp_att"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="1dp"
+                            app:boxCornerRadiusTopStart="10dp"
+                            app:boxCornerRadiusTopEnd="10dp"
+                            app:boxCornerRadiusBottomEnd="10dp"
+                            app:boxCornerRadiusBottomStart="10dp"
+                            app:boxBackgroundColor="@color/white"
+                            app:boxBackgroundMode="filled"
+                            app:endIconMode="dropdown_menu"
+                            app:boxStrokeWidth="0dp"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:hint="Division"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                            tools:ignore="HardcodedText">
+
+                            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                                android:id="@+id/division_select_for_emp_att"
+                                style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
+                                android:layout_width="match_parent"
+                                android:text=""
+                                android:inputType="text"
+                                android:importantForAutofill="no"
+                                android:ellipsize="none"
+                                android:maxLines="100"
+                                android:clickable="true"
+                                android:fontFamily="@font/be_vietnam_pro"
+                                android:focusable="false"
+                                android:textSize="@dimen/_9sdp"
+                                android:textColor="@color/black"
+                                android:scrollHorizontally="false"
+                                android:layout_height="wrap_content"
+                                android:imeOptions="actionDone" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_weight="5"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="10dp"
+                    android:layout_marginStart="@dimen/_4sdp"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:layout_marginBottom="@dimen/_2sdp"
+                    android:layout_marginEnd="@dimen/_2sdp"
+                    android:layout_gravity="center"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/white">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/statusBarcoloRSecond">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/spinner_layout_department_select_for_emp_att"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="1dp"
+                            app:boxCornerRadiusTopStart="10dp"
+                            app:boxCornerRadiusTopEnd="10dp"
+                            app:boxCornerRadiusBottomEnd="10dp"
+                            app:boxCornerRadiusBottomStart="10dp"
+                            app:boxBackgroundColor="@color/white"
+                            app:boxBackgroundMode="filled"
+                            app:endIconMode="dropdown_menu"
+                            app:boxStrokeWidth="0dp"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:enabled="false"
+                            android:hint="Department"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                            tools:ignore="HardcodedText">
+
+                            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                                android:id="@+id/department_select_for_emp_att"
+                                style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
+                                android:layout_width="match_parent"
+                                android:text=""
+                                android:inputType="text"
+                                android:importantForAutofill="no"
+                                android:ellipsize="none"
+                                android:maxLines="100"
+                                android:clickable="true"
+                                android:fontFamily="@font/be_vietnam_pro"
+                                android:focusable="false"
+                                android:textSize="@dimen/_9sdp"
+                                android:textColor="@color/black"
+                                android:scrollHorizontally="false"
+                                android:layout_height="wrap_content"
+                                android:imeOptions="actionDone" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_4sdp"
+                android:layout_marginEnd="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_4sdp"
+                android:weightSum="10"
+                android:orientation="horizontal">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_weight="5"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="10dp"
+                    android:layout_gravity="center"
+                    app:cardElevation="2dp"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:layout_marginBottom="@dimen/_2sdp"
+                    android:layout_marginStart="@dimen/_2sdp"
+                    android:layout_marginEnd="@dimen/_4sdp"
+                    app:cardBackgroundColor="@color/white">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/statusBarcoloRSecond">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/spinner_layout_designation_select_for_emp_att"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="1dp"
+                            app:boxCornerRadiusTopStart="10dp"
+                            app:boxCornerRadiusTopEnd="10dp"
+                            app:boxCornerRadiusBottomEnd="10dp"
+                            app:boxCornerRadiusBottomStart="10dp"
+                            app:boxBackgroundColor="@color/white"
+                            app:boxBackgroundMode="filled"
+                            app:endIconMode="dropdown_menu"
+                            app:boxStrokeWidth="0dp"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:enabled="false"
+                            android:hint="Designation"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                            tools:ignore="HardcodedText">
+
+                            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                                android:id="@+id/designation_select_for_emp_att"
+                                style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
+                                android:layout_width="match_parent"
+                                android:text=""
+                                android:inputType="text"
+                                android:importantForAutofill="no"
+                                android:ellipsize="none"
+                                android:maxLines="100"
+                                android:clickable="true"
+                                android:fontFamily="@font/be_vietnam_pro"
+                                android:focusable="false"
+                                android:textSize="@dimen/_9sdp"
+                                android:textColor="@color/black"
+                                android:scrollHorizontally="false"
+                                android:layout_height="wrap_content"
+                                android:imeOptions="actionDone" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_weight="5"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="10dp"
+                    android:layout_marginStart="@dimen/_4sdp"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:layout_marginBottom="@dimen/_2sdp"
+                    android:layout_marginEnd="@dimen/_2sdp"
+                    android:layout_gravity="center"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/white">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/statusBarcoloRSecond">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/spinner_layout_emp_select_for_emp_att"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="1dp"
+                            app:boxCornerRadiusTopStart="10dp"
+                            app:boxCornerRadiusTopEnd="10dp"
+                            app:boxCornerRadiusBottomEnd="10dp"
+                            app:boxCornerRadiusBottomStart="10dp"
+                            app:boxBackgroundColor="@color/white"
+                            app:boxBackgroundMode="filled"
+                            app:endIconMode="dropdown_menu"
+                            app:boxStrokeWidth="0dp"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:enabled="false"
+                            android:hint="Employee"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                            tools:ignore="HardcodedText">
+
+                            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                                android:id="@+id/emp_select_for_emp_att"
+                                style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
+                                android:layout_width="match_parent"
+                                android:text=""
+                                android:inputType="text"
+                                android:importantForAutofill="no"
+                                android:ellipsize="none"
+                                android:maxLines="100"
+                                android:clickable="true"
+                                android:fontFamily="@font/be_vietnam_pro"
+                                android:focusable="false"
+                                android:textSize="@dimen/_9sdp"
+                                android:textColor="@color/black"
+                                android:scrollHorizontally="false"
+                                android:layout_height="wrap_content"
+                                android:imeOptions="actionDone" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+            <ScrollView
+                android:id="@+id/emp_att_data_layout"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/emp_name_in_emp_wise_attendace"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Junayed Ahmed"
+                        android:gravity="center"
+                        android:textColor="@color/lunchScreenBack"
+                        android:fontFamily="@font/poppins_bold"
+                        android:textSize="@dimen/_11sdp"/>
+
+                    <TextView
+                        android:id="@+id/emp_code_in_emp_wise_attendace"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="(00203344)"
+                        android:gravity="center"
+                        android:textColor="@color/default_text_color"
+                        android:textSize="@dimen/_9sdp"
+                        android:fontFamily="@font/poppins_semibold"/>
+
+                    <TextView
+                        android:id="@+id/emp_designation_in_emp_wise_attendace"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="HR &amp; Admin"
+                        android:gravity="center"
+                        android:textColor="@color/default_text_color"
+                        android:fontFamily="@font/poppins_bold"
+                        android:textSize="@dimen/_10sdp"/>
+
+                    <TextView
+                        android:id="@+id/emp_pri_loc_in_emp_wise_attendace"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:gravity="center"
+                        android:textColor="@color/default_text_color"
+                        android:fontFamily="@font/poppins_bold"
+                        android:textSize="@dimen/_10sdp"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/track_record_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Track Record"
+                        android:textSize="@dimen/_9sdp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/poppins_bold"
+                        app:cornerRadius="@dimen/_8sdp"/>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_230sdp"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="5dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardCornerRadius="@dimen/_8sdp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:id="@+id/att_chart_layout_month_emp_wise"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentTop="true"
+                                android:layout_alignParentEnd="true"
+                                android:weightSum="10">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="5"
+                                    android:text=""
+                                    android:textColor="@color/statusBarcoloRSecond"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginTop="7dp"
+                                    android:layout_marginBottom="5dp"
+                                    android:textStyle="bold"
+                                    android:textSize="@dimen/_10sdp"
+                                    android:fontFamily="@font/poppins_medium"
+                                    tools:ignore="HardcodedText" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="5"
+                                    android:gravity="end|center"
+                                    android:orientation="horizontal"
+                                    tools:ignore="UseCompoundDrawables">
+
+                                    <TextView
+                                        android:id="@+id/select_month_for_att_graph_emp_wise"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="MONTH: NOV-22"
+                                        android:gravity="end"
+                                        android:textColor="@color/statusBarcoloRSecond"
+                                        android:layout_marginStart="10dp"
+                                        android:layout_marginTop="7dp"
+                                        android:layout_marginBottom="5dp"
+                                        android:textStyle="bold"
+                                        android:textSize="@dimen/_10sdp"
+                                        android:fontFamily="@font/poppins_medium" />
+
+                                    <ImageView
+                                        android:layout_width="@dimen/_16sdp"
+                                        android:layout_height="@dimen/_16sdp"
+                                        android:src="@drawable/arrow_drop_down_24"
+                                        app:tint="@color/lunchScreenBack"
+                                        android:layout_marginEnd="10dp"
+                                        tools:ignore="ContentDescription" />
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            <com.github.mikephil.charting.charts.PieChart
+                                android:id="@+id/emp_wise_attendance_pie_chart"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentEnd="true"
+                                android:layout_below="@+id/att_chart_layout_month_emp_wise"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginBottom="@dimen/_4sdp"
+                                android:layout_marginStart="@dimen/_4sdp"
+                                android:layout_marginEnd="@dimen/_4sdp" />
+
+                        </RelativeLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="@dimen/_4sdp"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginEnd="3dp"
+                        android:layout_marginBottom="@dimen/_8sdp"
+                        app:cardBackgroundColor="@color/white"
+                        android:visibility="visible"
+                        app:cardCornerRadius="@dimen/_8sdp"
+                        app:cardElevation="2dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/_4sdp"
+                                    android:layout_marginBottom="@dimen/_4sdp"
+                                    android:gravity="center"
+                                    android:text="Attendance Report"
+                                    android:fontFamily="@font/open_sans_bold"
+                                    android:textColor="@color/light_rose"
+                                    android:textSize="@dimen/_12sdp"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_centerVertical="true"
+                                    android:textStyle="bold"
+                                    tools:ignore="HardcodedText" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="2dp"
+                                android:background="@android:color/darker_gray" />
+
+                            <TextView
+                                android:id="@+id/date_from_report"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_8sdp"
+                                android:layout_marginBottom="@dimen/_8sdp"
+                                android:gravity="center"
+                                android:text=""
+                                android:fontFamily="@font/open_sans_bold"
+                                android:textColor="@color/statusBarcoloRSecond"
+                                android:textSize="@dimen/_11sdp"
+                                android:textStyle="bold" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:id="@+id/no_data_msg_attendance">
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="2dp"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/_4sdp"
+                                    android:layout_marginBottom="@dimen/_4sdp"
+                                    android:gravity="center"
+                                    android:fontFamily="@font/poppins_semibold"
+                                    android:text="No Data Found"
+                                    android:textColor="@color/default_text_color"
+                                    android:textSize="@dimen/_12sdp"
+                                    android:textStyle="bold"
+                                    tools:ignore="HardcodedText" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/attendancebefore_text"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:background="@color/lunchScreenBack"
+                                android:weightSum="1.15">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight=".21"
+                                    android:gravity="center"
+                                    android:paddingStart="@dimen/_2sdp"
+                                    android:paddingEnd="@dimen/_2sdp"
+                                    android:paddingTop="@dimen/_8sdp"
+                                    android:paddingBottom="@dimen/_8sdp"
+                                    android:text="Date"
+                                    android:textColor="@color/white"
+                                    android:fontFamily="@font/poppins"
+                                    android:textSize="@dimen/_8sdp"
+                                    android:textStyle="bold"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/white" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight=".17"
+                                    android:gravity="center"
+                                    android:paddingStart="@dimen/_2sdp"
+                                    android:paddingEnd="@dimen/_2sdp"
+                                    android:paddingTop="@dimen/_8sdp"
+                                    android:paddingBottom="@dimen/_8sdp"
+                                    android:text="Status"
+                                    android:fontFamily="@font/poppins"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_8sdp"
+                                    android:textStyle="bold"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/white" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight=".17"
+                                    android:gravity="center"
+                                    android:paddingStart="@dimen/_2sdp"
+                                    android:paddingEnd="@dimen/_2sdp"
+                                    android:paddingTop="@dimen/_8sdp"
+                                    android:paddingBottom="@dimen/_8sdp"
+                                    android:text="Shift"
+                                    android:fontFamily="@font/poppins"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_8sdp"
+                                    android:textStyle="bold"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/white" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight=".2"
+                                    android:gravity="center"
+                                    android:paddingStart="@dimen/_2sdp"
+                                    android:paddingEnd="@dimen/_2sdp"
+                                    android:paddingTop="@dimen/_8sdp"
+                                    android:paddingBottom="@dimen/_8sdp"
+                                    android:text="Punch Location"
+                                    android:fontFamily="@font/poppins"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_8sdp"
+                                    android:textStyle="bold"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/white" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight=".2"
+                                    android:gravity="center"
+                                    android:paddingStart="@dimen/_2sdp"
+                                    android:paddingEnd="@dimen/_2sdp"
+                                    android:paddingTop="@dimen/_8sdp"
+                                    android:paddingBottom="@dimen/_8sdp"
+                                    android:text="In Time"
+                                    android:fontFamily="@font/poppins"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_8sdp"
+                                    android:textStyle="bold"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/white" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight=".2"
+                                    android:gravity="center"
+                                    android:paddingStart="@dimen/_2sdp"
+                                    android:paddingEnd="@dimen/_2sdp"
+                                    android:paddingTop="@dimen/_8sdp"
+                                    android:paddingBottom="@dimen/_8sdp"
+                                    android:text="Out Time"
+                                    android:fontFamily="@font/poppins"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_8sdp"
+                                    android:textStyle="bold"
+                                    tools:ignore="HardcodedText" />
+
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@android:color/black" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/attnd_list_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginBottom="@dimen/_4sdp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/_4sdp"
+                                android:layout_marginTop="@dimen/_4sdp"
+                                android:background="@android:color/darker_gray" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_4sdp"
+                                android:orientation="vertical">
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="2dp"
+                                    android:background="@android:color/darker_gray" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="1">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray"/>
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:padding="2dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:gravity=""
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins"
+                                    android:layout_weight=".4"
+                                    android:text="Calender Days"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:id="@+id/days_in_month"
+                                    android:layout_width="0dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:gravity="center"
+                                    android:padding="2dp"
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins_semibold"
+                                    android:layout_weight=".1"
+                                    android:text=""/>
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:padding="2dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:gravity=""
+                                    android:fontFamily="@font/poppins"
+                                    android:textColor="@color/black"
+                                    android:layout_weight=".4"
+                                    android:text="Total Working Days"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+                                <TextView
+                                    android:id="@+id/working_days_in_month"
+                                    android:layout_width="0dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:gravity="center"
+                                    android:padding="2dp"
+                                    android:fontFamily="@font/poppins_semibold"
+                                    android:textColor="@color/black"
+                                    android:layout_weight=".1"
+                                    android:text=""/>
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="2dp"
+                                    android:background="@android:color/darker_gray" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="1">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:padding="2dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:gravity=""
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins"
+                                    android:layout_weight=".4"
+                                    android:text="Present Days"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:id="@+id/present_days_in_month"
+                                    android:layout_width="0dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:gravity="center"
+                                    android:padding="2dp"
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins_semibold"
+                                    android:layout_weight=".1"
+                                    android:text=""/>
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:padding="2dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:gravity=""
+                                    android:textColor="@color/black"
+                                    android:layout_weight=".4"
+                                    android:fontFamily="@font/poppins"
+                                    android:text="Absent Days"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:id="@+id/absent_days_in_month"
+                                    android:layout_width="0dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:gravity="center"
+                                    android:padding="2dp"
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins_semibold"
+                                    android:layout_weight=".1"
+                                    android:text=""/>
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="2dp"
+                                    android:background="@android:color/darker_gray" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="1">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:padding="2dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:gravity=""
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins"
+                                    android:layout_weight=".4"
+                                    android:text="Weekend"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:id="@+id/weekly_holidays_days_in_month"
+                                    android:layout_width="0dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:gravity="center"
+                                    android:padding="2dp"
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins_semibold"
+                                    android:layout_weight=".1"
+                                    android:text=""/>
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:padding="2dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:gravity=""
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins"
+                                    android:layout_weight=".4"
+                                    android:text="Work on Weekend"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:id="@+id/work_weekend_days_in_month"
+                                    android:layout_width="0dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:gravity="center"
+                                    android:padding="2dp"
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins_semibold"
+                                    android:layout_weight=".1"
+                                    android:text=""/>
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="2dp"
+                                    android:background="@android:color/darker_gray" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="1">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:padding="2dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:gravity=""
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins"
+                                    android:layout_weight=".4"
+                                    android:text="Holidays"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:id="@+id/holidays_days_in_month"
+                                    android:layout_width="0dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:gravity="center"
+                                    android:padding="2dp"
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins_semibold"
+                                    android:layout_weight=".1"
+                                    android:text=""/>
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:padding="2dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:gravity=""
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins"
+                                    android:layout_weight=".4"
+                                    android:text="Work on Holidays"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:id="@+id/work_on_holi_days_in_month"
+                                    android:layout_width="0dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:gravity="center"
+                                    android:padding="2dp"
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins_semibold"
+                                    android:layout_weight=".1"
+                                    android:text=""/>
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="2dp"
+                                    android:background="@android:color/darker_gray" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="1">
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:padding="2dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:gravity=""
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins"
+                                    android:layout_weight=".4"
+                                    android:text="Leave Days"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:id="@+id/leave_days_in_month"
+                                    android:layout_width="0dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:gravity="center"
+                                    android:padding="2dp"
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins_semibold"
+                                    android:layout_weight=".1"
+                                    android:text=""/>
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:padding="2dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:gravity=""
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins"
+                                    android:layout_weight=".4"
+                                    android:text="Work on Leave Days"
+                                    tools:ignore="HardcodedText" />
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                                <TextView
+                                    android:id="@+id/work_on_leave_days_in_month"
+                                    android:layout_width="0dp"
+                                    android:textSize="@dimen/_9sdp"
+                                    android:layout_height="match_parent"
+                                    android:textStyle="bold"
+                                    android:gravity="center"
+                                    android:padding="2dp"
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/poppins_semibold"
+                                    android:layout_weight=".1"
+                                    android:text=""/>
+
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="@android:color/darker_gray" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+
+            </ScrollView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_indicator_emp_wise_attendance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:indeterminate="true"
+        android:layout_gravity="center"/>
+
+</RelativeLayout>

@@ -14,5 +14,22 @@
     <color name="textDarkBlue">#273c75</color>
     <color name="calenderColorNormal">#74b9ff</color>
     <color name="selectedColor">#dfe6e9</color>
+    <color name="color_of_blue">#0984e3</color>
+    <color name="clouds">#ecf0f1</color>
+    <color name="blue_end">#fda000</color>
+    <color name="default_text_color">#6C6E6F</color>
+    <color name="deep_rose">#c44569</color>
+    <color name="pencil_lead">#596275</color>
+    <color name="light_rose">#cf6a87</color>
+    <color name="disabled">#b2bec3</color>
+    <color name="back_color">#95a5a6</color>
+    <color name="absent_color">#C000FF</color>
+    <color name="present_color">#00C080</color>
+    <color name="leave_color">#8F8F8F</color>
+    <color name="pres_on_leave">#4080C0</color>
+    <color name="pres_on_off">#E0C080</color>
+    <color name="off_day">#80E0FF</color>
+    <color name="progress_back_color">#ced6e0</color>
+    <color name="red_dark">#c23616</color>
 
 </resources>

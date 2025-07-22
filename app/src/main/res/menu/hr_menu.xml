@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/da_bar_name"
+        android:id="@+id/daily_attendance_hr_menu"
+        android:icon="@drawable/daily_attendance"/>
+    <item android:title="@string/emp_att_bar_name"
+        android:id="@+id/emp_wise_attendance_hr_menu"
+        android:icon="@drawable/emp_attendance"/>
+    <item android:title="@string/att_approve_bar_name"
+        android:id="@+id/att_update_approve_hr_menu"
+        android:icon="@drawable/att_up_app"/>
+    <item android:title="@string/le_record_bar_name"
+        android:id="@+id/leave_record_hr_menu"
+        android:icon="@drawable/leave"/>
+    <item android:title="@string/lv_bal_bar_name"
+        android:id="@+id/leave_balance_hr_menu"
+        android:icon="@drawable/lv_bal"/>
+    <item android:title="@string/le_approve_bar_name"
+        android:id="@+id/leave_approve_hr_menu"
+        android:icon="@drawable/leave_app"/>
+    <item android:title="@string/emp_track_bar_name"
+        android:id="@+id/emp_track_rec_hr_menu"
+        android:icon="@drawable/route"/>
+</menu>

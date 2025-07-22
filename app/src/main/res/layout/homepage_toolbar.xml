@@ -4,40 +4,40 @@
     android:layout_height="wrap_content"
     android:background="@color/statusBarcoloRSecond">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:id="@+id/terrain_logo"
-            android:layout_centerVertical="true"
-            android:src="@drawable/tracker_logo"/>
-        <TextView
-            android:id="@+id/thrm_app_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_toEndOf="@+id/terrain_logo"
-            android:textColor="@color/white"
-            android:layout_centerVertical="true"
-            android:textSize="20sp"
-            android:text="Terrain Tracker"
-            android:fontFamily="@font/russo_one"/>
+<!--    <RelativeLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:padding="16dp">-->
+<!--        <ImageView-->
+<!--            android:layout_width="30dp"-->
+<!--            android:layout_height="30dp"-->
+<!--            android:id="@+id/terrain_logo"-->
+<!--            android:layout_centerVertical="true"-->
+<!--            android:src="@drawable/tracker_logo"/>-->
+<!--        <TextView-->
+<!--            android:id="@+id/thrm_app_name"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="16dp"-->
+<!--            android:layout_toEndOf="@+id/terrain_logo"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:layout_centerVertical="true"-->
+<!--            android:textSize="20sp"-->
+<!--            android:text="Terrain Tracker"-->
+<!--            android:fontFamily="@font/russo_one"/>-->
 
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/log_out_icon"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/log_out_24"/>
+<!--        <ImageView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/log_out_icon"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_centerVertical="true"-->
+<!--            android:src="@drawable/log_out_24"/>-->
 
 
 
-    </RelativeLayout>
+<!--    </RelativeLayout>-->
 
 
 </RelativeLayout>

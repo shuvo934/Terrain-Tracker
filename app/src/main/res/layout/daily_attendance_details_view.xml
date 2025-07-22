@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    android:id="@+id/emp_daily_att_card_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="@dimen/_8sdp"
+    app:cardElevation="3dp"
+    android:foreground="?attr/selectableItemBackground"
+    android:layout_marginTop="@dimen/_5sdp"
+    android:layout_marginStart="@dimen/_4sdp"
+    android:layout_marginEnd="@dimen/_4sdp"
+    android:layout_marginBottom="@dimen/_4sdp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/border_design"
+        android:baselineAligned="false"
+        android:weightSum="10"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="start|center"
+            android:layout_weight="3.5"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:layout_marginTop="@dimen/_4sdp"
+            android:layout_marginBottom="@dimen/_2sdp">
+
+            <TextView
+                android:id="@+id/emp_name_da"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_bold"
+                android:text=""
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:textColor="@color/statusBarcoloRSecond"
+                android:textSize="@dimen/_9sdp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/emp_designation_da"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_bold"
+                android:text=""
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/emp_name_da"
+                android:textSize="@dimen/_8sdp"
+                android:textColor="@color/default_text_color"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/att_punch_location_da"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:fontFamily="@font/poppins_bold"
+                android:textSize="@dimen/_7sdp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/emp_designation_da"
+                android:textColor="@color/default_text_color"
+                tools:ignore="HardcodedText" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.7"
+            android:gravity="center"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:layout_marginBottom="@dimen/_2sdp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/shift_name_da"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text=""
+                android:gravity="center"
+                android:fontFamily="@font/poppins_bold"
+                android:textSize="@dimen/_8sdp"
+                android:textColor="@color/light_rose"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.6"
+            android:gravity="center"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:layout_marginBottom="@dimen/_2sdp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/in_time_da"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text=""
+                android:gravity="center"
+                android:fontFamily="@font/poppins_bold"
+                android:textSize="@dimen/_8sdp"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:id="@+id/late_status_da"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="(Late)"
+                android:gravity="center"
+                android:fontFamily="@font/poppins_bold"
+                android:textSize="@dimen/_7sdp"
+                android:textColor="@color/default_text_color"
+                tools:ignore="HardcodedText" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.6"
+            android:gravity="center"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:layout_marginBottom="@dimen/_2sdp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/out_time_da"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text=""
+                android:gravity="center"
+                android:fontFamily="@font/poppins_bold"
+                android:textSize="@dimen/_8sdp"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:id="@+id/early_status_da"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="(Early)"
+                android:gravity="center"
+                android:fontFamily="@font/poppins_bold"
+                android:textSize="@dimen/_7sdp"
+                android:textColor="@color/default_text_color"
+                tools:ignore="HardcodedText" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.6"
+            android:gravity="center"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:layout_marginTop="@dimen/_4sdp"
+            android:layout_marginBottom="@dimen/_4sdp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/attendance_status_da"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text=""
+                android:gravity="center"
+                android:fontFamily="@font/poppins_bold"
+                android:textSize="@dimen/_8sdp"
+                android:textColor="@color/present_color"
+                android:shadowColor="@color/progress_back_color"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

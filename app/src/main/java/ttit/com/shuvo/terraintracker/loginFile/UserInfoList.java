@@ -2,44 +2,44 @@ package ttit.com.shuvo.terraintracker.loginFile;
 
 public class UserInfoList {
 
-    private String userName;
-    private String user_fname;
-    private String user_lname;
+    private String emp_code;
+    private String user_name;
+    private String user_nick_name;
     private String email;
     private String contact;
     private String emp_id;
 
-    public UserInfoList(String userName, String user_fname, String user_lname, String email, String contact, String emp_id) {
-        this.userName = userName;
-        this.user_fname = user_fname;
-        this.user_lname = user_lname;
+    public UserInfoList(String emp_code, String user_name, String user_nick_name, String email, String contact, String emp_id) {
+        this.emp_code = emp_code;
+        this.user_name = user_name;
+        this.user_nick_name = user_nick_name;
         this.email = email;
         this.contact = contact;
         this.emp_id = emp_id;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getEmp_code() {
+        return emp_code;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setEmp_code(String emp_code) {
+        this.emp_code = emp_code;
     }
 
-    public String getUser_fname() {
-        return user_fname;
+    public String getUser_name() {
+        return user_name;
     }
 
-    public void setUser_fname(String user_fname) {
-        this.user_fname = user_fname;
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
     }
 
-    public String getUser_lname() {
-        return user_lname;
+    public String getUser_nick_name() {
+        return user_nick_name;
     }
 
-    public void setUser_lname(String user_lname) {
-        this.user_lname = user_lname;
+    public void setUser_nick_name(String user_nick_name) {
+        this.user_nick_name = user_nick_name;
     }
 
     public String getEmail() {

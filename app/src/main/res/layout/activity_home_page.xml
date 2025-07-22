@@ -1,723 +1,668 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="@color/statusBarcoloRSecond"
+    android:fitsSystemWindows="true"
     tools:context=".MainPage.HomePage">
 
-    <include
-        android:id="@+id/custom_toolbar"
-        layout="@layout/homepage_toolbar" />
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/userinfo_card"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginTop="10dp"
-        app:cardCornerRadius="10dp"
-        android:background="@color/cardColor"
-        app:cardElevation="5dp">
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white">
 
-        <LinearLayout
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/emp_track_record_full_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white">
+
+        <RelativeLayout
+            android:id="@+id/app_bar_emp_track_record"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:orientation="vertical">
+            android:background="@color/statusBarcoloRSecond"
+            android:padding="@dimen/_12sdp">
+
+            <ImageView
+                android:layout_width="@dimen/_19sdp"
+                android:layout_height="@dimen/_19sdp"
+                android:id="@+id/back_logo_of_emp_track_record"
+                android:layout_centerVertical="true"
+                android:src="@drawable/arrow_back"
+                app:tint="@color/white"
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/cantora_one"
-                android:text="Welcome,"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/user_name_homepage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:layout_marginBottom="10dp"
-                android:fontFamily="@font/roboto_medium"
-                android:paddingStart="3dp"
-                android:paddingEnd="3dp"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-
-                android:text="MDDD"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginEnd="@dimen/_4sdp"
+                android:layout_toEndOf="@+id/back_logo_of_emp_track_record"
+                android:layout_toStartOf="@+id/branch_selection_for_track_record"
+                android:fontFamily="@font/poppins_bold"
+                android:text="@string/emp_track_bar_name"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_14sdp" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/branch_selection_for_track_record"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
                 android:visibility="gone"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/user_pic_dashboard"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="@dimen/_16sdp"
+                    android:layout_height="@dimen/_18sdp"
+                    android:src="@drawable/business_24"
+                    app:tint="@color/white"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/selected_branch_name_emp_track_record"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:text="None"
+                    android:fontFamily="@font/archivo_bold"
+                    android:textSize="@dimen/_8sdp"
                     android:layout_gravity="center"
-                    android:src="@drawable/user" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/user_name_dashboard"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:fontFamily="@font/roboto_medium"
-                        android:paddingStart="3dp"
-                        android:paddingEnd="3dp"
-                        android:text=""
-                        android:textColor="@color/black"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/user_desg_dashboard"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:fontFamily="@font/roboto"
-                        android:paddingStart="3dp"
-                        android:paddingEnd="3dp"
-                        android:text=""
-                        android:textColor="@color/black"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/user_depart_dashboard"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:fontFamily="@font/roboto"
-                        android:paddingStart="3dp"
-                        android:paddingEnd="3dp"
-                        android:text=""
-                        android:textColor="@color/black"
-                        android:textStyle="bold" />
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="2dp"
-                        android:layout_marginBottom="2dp"
-                        android:background="#48dbfb"
-                        app:cardBackgroundColor="@color/white"
-                        app:cardCornerRadius="10dp">
-
-                        <TextView
-                            android:id="@+id/company_name_dashboard"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:fontFamily="@font/roboto"
-                            android:paddingStart="3dp"
-                            android:paddingEnd="3dp"
-                            android:text=""
-                            android:textColor="#5352ed"
-                            android:textStyle="bold" />
-
-                    </androidx.cardview.widget.CardView>
-
-
-                </LinearLayout>
-
+                    android:padding="@dimen/_2sdp"
+                    android:layout_marginStart="@dimen/_2sdp"/>
 
             </LinearLayout>
 
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:fontFamily="@font/roboto_medium"
-        android:paddingStart="3dp"
-        android:paddingEnd="3dp"
-        android:text="Select Employee"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="16sp"
-        android:textStyle="bold" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1">
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="2.5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight=".5"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/statusBarcoloRSecond">
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/spinner_layout_division"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="1dp"
-                    app:boxCornerRadiusTopStart="10dp"
-                    app:boxCornerRadiusTopEnd="10dp"
-                    app:boxCornerRadiusBottomEnd="10dp"
-                    app:boxCornerRadiusBottomStart="10dp"
-                    app:boxBackgroundColor="@color/white"
-                    app:boxBackgroundMode="filled"
-                    app:endIconMode="dropdown_menu"
-                    app:boxStrokeWidth="0dp"
-                    android:hint="Division"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                    >
-
-                    <com.rosemaryapp.amazingspinner.AmazingSpinner
-                        android:id="@+id/division_type_spinner"
-                        style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
-                        android:layout_width="match_parent"
-                        android:text=""
-                        android:layout_height="wrap_content"
-                        />
-                </com.google.android.material.textfield.TextInputLayout>
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="2.5dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_weight=".5"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/statusBarcoloRSecond">
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/spinner_layout_department"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="1dp"
-                    app:boxCornerRadiusTopStart="10dp"
-                    app:boxCornerRadiusTopEnd="10dp"
-                    app:boxCornerRadiusBottomEnd="10dp"
-                    app:boxCornerRadiusBottomStart="10dp"
-                    app:boxBackgroundColor="@color/white"
-                    app:boxBackgroundMode="filled"
-                    app:endIconMode="dropdown_menu"
-                    app:boxStrokeWidth="0dp"
-                    android:hint="Department"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                    >
-
-                    <com.rosemaryapp.amazingspinner.AmazingSpinner
-                        android:id="@+id/department_type_spinner"
-                        style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
-                        android:layout_width="match_parent"
-                        android:text=""
-                        android:layout_height="wrap_content"
-                        />
-                </com.google.android.material.textfield.TextInputLayout>
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1">
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="2.5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="2dp"
-            android:layout_weight=".5"
-            app:cardBackgroundColor="@color/white">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/statusBarcoloRSecond">
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/spinner_layout_designation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="1dp"
-                    app:boxCornerRadiusTopStart="10dp"
-                    app:boxCornerRadiusTopEnd="10dp"
-                    app:boxCornerRadiusBottomEnd="10dp"
-                    app:boxCornerRadiusBottomStart="10dp"
-                    app:boxBackgroundColor="@color/white"
-                    app:boxBackgroundMode="filled"
-                    app:endIconMode="dropdown_menu"
-                    app:boxStrokeWidth="0dp"
-                    android:hint="Designation"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                    >
-
-                    <com.rosemaryapp.amazingspinner.AmazingSpinner
-                        android:id="@+id/designation_type_spinner"
-                        style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
-                        android:layout_width="match_parent"
-                        android:text=""
-                        android:layout_height="wrap_content"
-                        />
-                </com.google.android.material.textfield.TextInputLayout>
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="2.5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="2dp"
-            android:layout_weight=".5"
-            app:cardBackgroundColor="@color/white">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/statusBarcoloRSecond">
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/spinner_layout_employee"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="1dp"
-                    app:boxCornerRadiusTopStart="10dp"
-                    app:boxCornerRadiusTopEnd="10dp"
-                    app:boxCornerRadiusBottomEnd="10dp"
-                    app:boxCornerRadiusBottomStart="10dp"
-                    app:boxBackgroundColor="@color/white"
-                    app:boxBackgroundMode="filled"
-                    app:endIconMode="dropdown_menu"
-                    app:boxStrokeWidth="0dp"
-                    android:hint="Employee"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                    >
-
-                    <com.rosemaryapp.amazingspinner.AmazingSpinner
-                        android:id="@+id/employee_type_spinner"
-                        style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
-                        android:layout_width="match_parent"
-                        android:text=""
-                        android:layout_height="wrap_content"
-                        />
-                </com.google.android.material.textfield.TextInputLayout>
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-    </LinearLayout>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp">
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="@dimen/_4sdp"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:layout_marginBottom="@dimen/_4sdp"
+            android:weightSum="10"
+            android:orientation="horizontal">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/emp_card"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="5"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginTop="5dp"
-                android:visibility="visible"
-                android:layout_marginBottom="5dp"
-                app:cardCornerRadius="10dp"
-                android:elevation="3dp"
+                app:cardCornerRadius="@dimen/_8sdp"
+                android:layout_gravity="center"
+                app:cardElevation="2dp"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:layout_marginBottom="@dimen/_2sdp"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_4sdp"
                 app:cardBackgroundColor="@color/white">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:background="@color/statusBarcoloRSecond">
 
-                    <LinearLayout
-                        android:id="@+id/all_employee_layout"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/spinner_layout_division"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginTop="5dp">
+                        android:layout_margin="1dp"
+                        app:boxCornerRadiusTopStart="@dimen/_8sdp"
+                        app:boxCornerRadiusTopEnd="@dimen/_8sdp"
+                        app:boxCornerRadiusBottomEnd="@dimen/_8sdp"
+                        app:boxCornerRadiusBottomStart="@dimen/_8sdp"
+                        app:boxBackgroundColor="@color/white"
+                        app:boxBackgroundMode="filled"
+                        app:endIconMode="dropdown_menu"
+                        app:boxStrokeWidth="0dp"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:hint="Division"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                        tools:ignore="HardcodedText">
 
-                        <TextView
+                        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                            android:id="@+id/division_type_spinner"
+                            style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="All Employee Location:"
-                            android:textStyle="bold"
-                            android:gravity="center"
-                            android:layout_marginBottom="5dp"
-                            android:fontFamily="@font/roboto_medium"
+                            android:text=""
+                            android:inputType="text"
+                            android:importantForAutofill="no"
+                            android:ellipsize="none"
+                            android:maxLines="100"
+                            android:clickable="true"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:focusable="false"
+                            android:textSize="@dimen/_9sdp"
                             android:textColor="@color/black"
-                            android:textSize="17sp"/>
-
-                        <TextView
-                            android:id="@+id/timeline_all_not_msg"
-                            android:layout_width="match_parent"
+                            android:scrollHorizontally="false"
                             android:layout_height="wrap_content"
-                            android:text="Not Activated"
-                            android:textStyle="bold"
-                            android:visibility="visible"
-                            android:gravity="center"
-                            android:fontFamily="@font/roboto_medium"
-                            android:layout_marginBottom="10dp"
-                            android:textSize="15sp"/>
+                            android:imeOptions="actionDone" />
 
-                        <Button
-                            android:id="@+id/button_live_location_all_employee"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:text="Live Location"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/white"
-                            android:layout_marginBottom="10dp"
-                            />
+                    </com.google.android.material.textfield.TextInputLayout>
 
+                </LinearLayout>
 
-                    </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/_8sdp"
+                android:layout_marginStart="@dimen/_4sdp"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:layout_marginBottom="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:layout_gravity="center"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/statusBarcoloRSecond">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/spinner_layout_department"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="1dp"
+                        app:boxCornerRadiusTopStart="@dimen/_8sdp"
+                        app:boxCornerRadiusTopEnd="@dimen/_8sdp"
+                        app:boxCornerRadiusBottomEnd="@dimen/_8sdp"
+                        app:boxCornerRadiusBottomStart="@dimen/_8sdp"
+                        app:boxBackgroundColor="@color/white"
+                        app:boxBackgroundMode="filled"
+                        app:endIconMode="dropdown_menu"
+                        app:boxStrokeWidth="0dp"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:enabled="false"
+                        android:hint="Department"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                        tools:ignore="HardcodedText">
+
+                        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                            android:id="@+id/department_type_spinner"
+                            style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
+                            android:layout_width="match_parent"
+                            android:text=""
+                            android:inputType="text"
+                            android:importantForAutofill="no"
+                            android:ellipsize="none"
+                            android:maxLines="100"
+                            android:clickable="true"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:focusable="false"
+                            android:textSize="@dimen/_9sdp"
+                            android:textColor="@color/black"
+                            android:scrollHorizontally="false"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionDone" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:layout_marginBottom="@dimen/_4sdp"
+            android:weightSum="10"
+            android:orientation="horizontal">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/_8sdp"
+                android:layout_gravity="center"
+                app:cardElevation="2dp"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:layout_marginBottom="@dimen/_2sdp"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_4sdp"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/statusBarcoloRSecond">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/spinner_layout_designation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="1dp"
+                        app:boxCornerRadiusTopStart="@dimen/_8sdp"
+                        app:boxCornerRadiusTopEnd="@dimen/_8sdp"
+                        app:boxCornerRadiusBottomEnd="@dimen/_8sdp"
+                        app:boxCornerRadiusBottomStart="@dimen/_8sdp"
+                        app:boxBackgroundColor="@color/white"
+                        app:boxBackgroundMode="filled"
+                        app:endIconMode="dropdown_menu"
+                        app:boxStrokeWidth="0dp"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:enabled="false"
+                        android:hint="Designation"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                        tools:ignore="HardcodedText">
+
+                        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                            android:id="@+id/designation_type_spinner"
+                            style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
+                            android:layout_width="match_parent"
+                            android:text=""
+                            android:inputType="text"
+                            android:importantForAutofill="no"
+                            android:ellipsize="none"
+                            android:maxLines="100"
+                            android:clickable="true"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:focusable="false"
+                            android:textSize="@dimen/_9sdp"
+                            android:textColor="@color/black"
+                            android:scrollHorizontally="false"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionDone" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/_8sdp"
+                android:layout_marginStart="@dimen/_4sdp"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:layout_marginBottom="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:layout_gravity="center"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/statusBarcoloRSecond">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/spinner_layout_employee"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="1dp"
+                        app:boxCornerRadiusTopStart="@dimen/_8sdp"
+                        app:boxCornerRadiusTopEnd="@dimen/_8sdp"
+                        app:boxCornerRadiusBottomEnd="@dimen/_8sdp"
+                        app:boxCornerRadiusBottomStart="@dimen/_8sdp"
+                        app:boxBackgroundColor="@color/white"
+                        app:boxBackgroundMode="filled"
+                        app:endIconMode="dropdown_menu"
+                        app:boxStrokeWidth="0dp"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:enabled="false"
+                        android:hint="Employee"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                        tools:ignore="HardcodedText">
+
+                        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                            android:id="@+id/employee_type_spinner"
+                            style="@style/Widget.MaterialComponents.AutoCompleteTextView.FilledBox"
+                            android:layout_width="match_parent"
+                            android:text=""
+                            android:inputType="text"
+                            android:importantForAutofill="no"
+                            android:ellipsize="none"
+                            android:maxLines="100"
+                            android:clickable="true"
+                            android:fontFamily="@font/be_vietnam_pro"
+                            android:focusable="false"
+                            android:textSize="@dimen/_9sdp"
+                            android:textColor="@color/black"
+                            android:scrollHorizontally="false"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionDone" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/_4sdp"
+            android:layout_marginBottom="@dimen/_8sdp"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_4sdp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/emp_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_4sdp"
+                    android:layout_marginEnd="@dimen/_4sdp"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:visibility="visible"
+                    android:layout_marginBottom="@dimen/_4sdp"
+                    app:cardCornerRadius="@dimen/_8sdp"
+                    android:elevation="@dimen/_2sdp"
+                    app:cardBackgroundColor="@color/white">
 
                     <LinearLayout
-                        android:id="@+id/single_employee_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="TIMELINE:"
-                            android:textStyle="bold"
-                            android:gravity="center"
-                            android:layout_marginBottom="5dp"
-                            android:fontFamily="@font/roboto_medium"
-                            android:textColor="@color/black"
-                            android:textSize="17sp"/>
-
-                        <TextView
-                            android:id="@+id/timeline_not_msg"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Not Activated"
-                            android:textStyle="bold"
-                            android:gravity="center"
-                            android:fontFamily="@font/roboto_medium"
-                            android:layout_marginBottom="10dp"
-                            android:textSize="15sp"/>
-
-
-
                         <LinearLayout
+                            android:id="@+id/all_employee_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center"
-                            android:layout_marginTop="2dp"
-                            android:layout_gravity="center"
-                            android:weightSum="1">
-                            <Button
-                                android:id="@+id/button_live_location"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_gravity="center"
-                                android:gravity="center"
-                                android:layout_weight=".5"
-                                android:layout_marginStart="10dp"
-                                android:layout_marginEnd="10dp"
-                                android:text="Live Location"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/white"
-                                android:layout_marginBottom="10dp"
-                                />
+                            android:orientation="vertical"
+                            android:layout_marginTop="@dimen/_4sdp">
 
-                            <Button
-                                android:id="@+id/button_time_line"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_2sdp"
+                                android:text="All Employee Location:"
+                                android:gravity="center"
+                                android:layout_marginBottom="@dimen/_4sdp"
+                                android:fontFamily="@font/poppins_bold"
+                                android:textColor="@color/lunchScreenBack"
+                                android:textSize="@dimen/_13sdp"
+                                tools:ignore="HardcodedText" />
+
+                            <TextView
+                                android:id="@+id/timeline_all_not_msg"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Not Activated"
+                                android:textStyle="bold"
+                                android:visibility="visible"
+                                android:gravity="center"
+                                android:fontFamily="@font/poppins_medium"
+                                android:layout_marginBottom="@dimen/_8sdp"
+                                android:textSize="@dimen/_10sdp"
+                                tools:ignore="HardcodedText" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/button_live_location_all_employee"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:gravity="center"
-                                android:layout_weight=".5"
-                                android:layout_marginStart="10dp"
-                                android:layout_marginEnd="10dp"
-                                android:text="Check Activity"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
+                                android:layout_marginStart="@dimen/_8sdp"
+                                android:layout_marginEnd="@dimen/_8sdp"
+                                android:text="Live Location"
+                                android:textSize="@dimen/_11sdp"
+                                android:fontFamily="@font/poppins_bold"
+                                android:paddingBottom="@dimen/_2sdp"
+                                app:cornerRadius="@dimen/_8sdp"
                                 android:textColor="@color/white"
-                                android:layout_marginBottom="10dp"
-                                />
+                                android:layout_marginBottom="@dimen/_8sdp"
+                                tools:ignore="HardcodedText" />
 
                         </LinearLayout>
 
                         <LinearLayout
+                            android:id="@+id/single_employee_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
-                            <Button
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="@dimen/_60sdp"
+                                android:layout_height="@dimen/_60sdp"
+                                android:elevation="@dimen/_3sdp"
+                                app:cardCornerRadius="@dimen/_50sdp"
+                                android:layout_marginTop="@dimen/_4sdp"
+                                android:layout_marginBottom="@dimen/_4sdp"
+                                android:layout_gravity="center">
+
+                                <de.hdodenhof.circleimageview.CircleImageView
+                                    android:id="@+id/user_pic"
+                                    android:layout_width="@dimen/_58sdp"
+                                    android:layout_height="@dimen/_58sdp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/profile"
+                                    app:civ_border_width="1dp"
+                                    app:civ_border_color="#3463ab"/>
+
+                            </androidx.cardview.widget.CardView>
+
+                            <TextView
+                                android:id="@+id/emp_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:textColor="@color/statusBarcoloRSecond"
+                                android:layout_marginStart="@dimen/_8sdp"
+                                android:layout_marginEnd="@dimen/_8sdp"
+                                android:fontFamily="@font/be_vietnam_pro_bold"
+                                android:textSize="@dimen/_13sdp"/>
+
+                            <TextView
+                                android:id="@+id/email_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text=""
+                                android:visibility="gone"
+                                android:layout_marginStart="@dimen/_8sdp"
+                                android:layout_marginEnd="@dimen/_8sdp"
+                                android:textColor="@color/default_text_color"
+                                android:fontFamily="@font/be_vietnam_pro_medium"
+                                android:textSize="@dimen/_11sdp"/>
+
+                            <TextView
+                                android:id="@+id/emp_title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:layout_marginStart="@dimen/_8sdp"
+                                android:layout_marginEnd="@dimen/_8sdp"
+                                android:textColor="@color/default_text_color"
+                                android:fontFamily="@font/be_vietnam_pro_medium"
+                                android:textSize="@dimen/_11sdp"/>
+
+                            <TextView
+                                android:id="@+id/department_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:layout_marginStart="@dimen/_8sdp"
+                                android:layout_marginEnd="@dimen/_8sdp"
+                                android:textColor="@color/default_text_color"
+                                android:fontFamily="@font/be_vietnam_pro_medium"
+                                android:textSize="@dimen/_11sdp"/>
+
+                            <TextView
+                                android:id="@+id/division_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:layout_marginStart="@dimen/_8sdp"
+                                android:layout_marginEnd="@dimen/_8sdp"
+                                android:textColor="@color/default_text_color"
+                                android:fontFamily="@font/be_vietnam_pro_medium"
+                                android:textSize="@dimen/_11sdp"/>
+
+                            <TextView
+                                android:id="@+id/company_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:layout_marginStart="@dimen/_8sdp"
+                                android:layout_marginEnd="@dimen/_8sdp"
+                                android:textColor="@color/default_text_color"
+                                android:fontFamily="@font/be_vietnam_pro_medium"
+                                android:textSize="@dimen/_11sdp"/>
+
+
+                            
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_10sdp"
+                                android:text="TRACK DATA:"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:layout_marginStart="@dimen/_8sdp"
+                                android:layout_marginEnd="@dimen/_8sdp"
+                                android:fontFamily="@font/poppins_bold"
+                                android:textColor="@color/lunchScreenBack"
+                                android:textSize="@dimen/_14sdp"
+                                tools:ignore="HardcodedText" />
+
+                            <TextView
+                                android:id="@+id/timeline_not_msg"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tracking is not allowed for this Employee"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:visibility="visible"
+                                android:fontFamily="@font/poppins_medium"
+                                android:layout_marginBottom="@dimen/_8sdp"
+                                android:layout_marginStart="@dimen/_8sdp"
+                                android:layout_marginEnd="@dimen/_8sdp"
+                                android:textSize="@dimen/_11sdp"
+                                tools:ignore="HardcodedText" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center"
+                                android:layout_marginTop="@dimen/_4sdp"
+                                android:layout_gravity="center"
+                                android:weightSum="1">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/button_live_location"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:layout_weight=".5"
+                                    android:layout_marginStart="@dimen/_8sdp"
+                                    android:layout_marginEnd="@dimen/_8sdp"
+                                    android:text="Live Location"
+                                    android:textSize="@dimen/_11sdp"
+                                    android:fontFamily="@font/poppins_bold"
+                                    android:paddingBottom="@dimen/_2sdp"
+                                    app:cornerRadius="@dimen/_8sdp"
+                                    android:textColor="@color/white"
+                                    android:layout_marginBottom="@dimen/_8sdp"
+                                    tools:ignore="HardcodedText" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/button_time_line"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:layout_weight=".5"
+                                    android:layout_marginStart="@dimen/_8sdp"
+                                    android:layout_marginEnd="@dimen/_8sdp"
+                                    android:text="Timeline"
+                                    android:textSize="@dimen/_11sdp"
+                                    android:fontFamily="@font/poppins_bold"
+                                    android:paddingBottom="@dimen/_2sdp"
+                                    app:cornerRadius="@dimen/_8sdp"
+                                    android:textColor="@color/white"
+                                    android:layout_marginBottom="@dimen/_8sdp"
+                                    tools:ignore="HardcodedText" />
+
+                            </LinearLayout>
+
+                            <com.google.android.material.button.MaterialButton
                                 android:id="@+id/button_set_data"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="end"
                                 android:gravity="center"
-                                android:layout_marginStart="10dp"
-                                android:layout_marginEnd="10dp"
+                                android:layout_marginStart="@dimen/_8sdp"
+                                android:layout_marginEnd="@dimen/_8sdp"
                                 android:text="set data"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
+                                android:textSize="@dimen/_10sdp"
                                 android:textColor="@color/white"
-                                android:layout_marginBottom="10dp"
-                                />
+                                android:fontFamily="@font/poppins_bold"
+                                android:paddingBottom="@dimen/_2sdp"
+                                app:cornerRadius="@dimen/_8sdp"
+                                android:layout_marginBottom="@dimen/_8sdp"
+                                tools:ignore="HardcodedText" />
 
                         </LinearLayout>
 
-
-                        <TextView
-                            android:layout_marginTop="10dp"
-                            android:layout_marginBottom="10dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="- - - - - - - - - - - - - - - - - - - - - - -"
-                            android:gravity="center"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Profile Info:"
-                            android:textStyle="bold|italic"
-                            android:fontFamily="@font/roboto_medium"
-                            android:textColor="@color/black"
-                            android:layout_marginBottom="2dp"
-                            android:layout_marginStart="10dp"
-                            android:textSize="18sp"/>
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="77dp"
-                            android:layout_height="77dp"
-                            android:elevation="4dp"
-                            app:cardCornerRadius="70dp"
-                            android:layout_marginStart="2dp"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginBottom="5dp"
-                            android:layout_gravity="center">
-
-                            <de.hdodenhof.circleimageview.CircleImageView
-                                android:id="@+id/user_pic"
-                                android:layout_width="75dp"
-                                android:layout_height="75dp"
-                                android:layout_gravity="center"
-                                android:src="@drawable/profile"
-                                app:civ_border_width="1dp"
-                                app:civ_border_color="#3463ab"/>
-
-                        </androidx.cardview.widget.CardView>
-                        <TextView
-                            android:id="@+id/emp_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Md. Ahasan Ul Haque Shuvo"
-                            android:gravity="center"
-                            android:textStyle="bold"
-                            android:layout_marginStart="10dp"
-                            android:fontFamily="@font/roboto_medium"
-                            android:textSize="17sp"/>
-                        <TextView
-                            android:id="@+id/emp_title"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Manager"
-                            android:gravity="center"
-                            android:layout_marginStart="10dp"
-                            android:textStyle="bold"
-                            android:fontFamily="@font/roboto_medium"
-                            android:textSize="16sp"/>
-                        <TextView
-                            android:id="@+id/department_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Android"
-                            android:textStyle="bold"
-                            android:gravity="center"
-                            android:layout_marginStart="10dp"
-                            android:fontFamily="@font/roboto_medium"
-                            android:textSize="16sp"/>
-                        <TextView
-                            android:id="@+id/division_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Mobile Apps Development"
-                            android:gravity="center"
-                            android:textStyle="bold"
-                            android:layout_marginStart="10dp"
-                            android:fontFamily="@font/roboto_medium"
-                            android:textSize="16sp"/>
-                        <TextView
-                            android:id="@+id/company_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Terrain Company"
-                            android:gravity="center"
-                            android:layout_marginStart="10dp"
-                            android:textStyle="bold"
-                            android:fontFamily="@font/roboto_medium"
-                            android:textSize="16sp"/>
-
-
-
-
-
-                        <TextView
-                            android:layout_marginTop="10dp"
-                            android:layout_marginBottom="10dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="- - - - - - - - - - - - - - - - - - - - - - -"
-                            android:gravity="center"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Email:"
-                            android:gravity="center"
-                            android:textStyle="bold"
-                            android:layout_marginStart="10dp"
-                            android:fontFamily="@font/roboto_medium"
-                            android:textColor="@color/black"
-                            android:textSize="17sp"/>
-                        <TextView
-                            android:id="@+id/email_name"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="ahsanul@techterrain-it.com"
-                            android:textStyle="bold"
-                            android:layout_marginStart="10dp"
-                            android:fontFamily="@font/roboto_medium"
-                            android:textSize="16sp"/>
-
-                        <TextView
-                            android:layout_marginTop="10dp"
-                            android:layout_marginBottom="10dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="- - - - - - - - - - - - - - - - - - - - - - -"
-                            android:gravity="center"
-                            android:textStyle="bold"/>
-
-<!--                        <TextView-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:text="Attendance:"-->
-<!--                            android:textStyle="bold|italic"-->
-<!--                            android:fontFamily="@font/roboto_medium"-->
-<!--                            android:textColor="@color/black"-->
-<!--                            android:layout_marginBottom="2dp"-->
-<!--                            android:layout_marginStart="10dp"-->
-<!--                            android:textSize="18sp"/>-->
-
-                        <Button
-                            android:id="@+id/attendance_details_button"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:text="Check Attendance"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/white"
-                            android:layout_marginBottom="10dp"
-                            />
-
-                        <TextView
-                            android:layout_marginTop="10dp"
-                            android:layout_marginBottom="10dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="- - - - - - - - - - - - - - - - - - - - - - -"
-                            android:gravity="center"
-                            android:textStyle="bold"/>
-
-
-
-
-
-
-
-
                     </LinearLayout>
 
-                </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
+            </LinearLayout>
 
+        </ScrollView>
 
-            </androidx.cardview.widget.CardView>
+    </LinearLayout>
 
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_indicator_emp_track_record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:indeterminate="true"
+        android:layout_gravity="center"/>
+
+</RelativeLayout>

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:id="@+id/search_leave_request_full_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:layout_height="wrap_content"
+            android:background="@color/statusBarcoloRSecond">
+
+            <TextView
+                android:id="@+id/search_leave_req_dial_top_bar_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Select Leave Request Code:"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:fontFamily="@font/russo_one"
+                android:textSize="@dimen/_13sdp"
+                tools:ignore="HardcodedText" />
+
+        </LinearLayout>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/search_field_card_view_leave_request"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_4sdp"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:layout_marginBottom="@dimen/_4sdp"
+            app:cardCornerRadius="@dimen/_8sdp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/statusBarcoloRSecond">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/search_leave_req_code_layout_for_leave_approve"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="1dp"
+                    android:hint="Search by Application Code or Emp Name"
+                    app:boxCornerRadiusTopStart="@dimen/_8sdp"
+                    app:boxCornerRadiusTopEnd="@dimen/_8sdp"
+                    app:boxCornerRadiusBottomEnd="@dimen/_8sdp"
+                    app:boxCornerRadiusBottomStart="@dimen/_8sdp"
+                    app:boxStrokeWidthFocused="1dp"
+                    app:helperText=""
+                    app:boxBackgroundColor="@color/white"
+                    app:boxBackgroundMode="filled"
+                    app:boxStrokeWidth="0dp"
+                    app:helperTextEnabled="true"
+                    android:textColorHint="@color/disabled"
+                    tools:ignore="HardcodedText">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/search_leave_req_code_for_leave_approve"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:imeOptions="actionDone"
+                        android:fontFamily="@font/poppins"
+                        android:textSize="@dimen/_10sdp"
+                        android:inputType="text"
+                        android:textColor="@color/default_text_color"
+                        android:textStyle="bold" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="7dp"
+            app:cardElevation="3dp"
+            app:cardCornerRadius="@dimen/_10sdp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="10"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2.5"
+                        android:background="@color/statusBarcoloRSecond"
+                        android:text="Application Code"
+                        android:fontFamily="@font/patua_one"
+                        android:textColor="@color/white"
+                        android:padding="4dp"
+                        android:layout_marginEnd="2dp"
+                        android:gravity="center"
+                        android:textSize="@dimen/_9sdp"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2.5"
+                        android:background="@color/statusBarcoloRSecond"
+                        android:text="Emp Name"
+                        android:fontFamily="@font/patua_one"
+                        android:textColor="@color/white"
+                        android:padding="4dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
+                        android:gravity="center"
+                        android:textSize="@dimen/_9sdp"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.5"
+                        android:background="@color/statusBarcoloRSecond"
+                        android:text="Emp Code"
+                        android:fontFamily="@font/patua_one"
+                        android:textColor="@color/white"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
+                        android:padding="4dp"
+                        android:gravity="center"
+                        android:textSize="@dimen/_9sdp"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:background="@color/statusBarcoloRSecond"
+                        android:text="Application Date"
+                        android:fontFamily="@font/patua_one"
+                        android:textColor="@color/white"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
+                        android:padding="4dp"
+                        android:gravity="center"
+                        android:textSize="@dimen/_9sdp"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.5"
+                        android:background="@color/statusBarcoloRSecond"
+                        android:text="Leave Days"
+                        android:fontFamily="@font/patua_one"
+                        android:textColor="@color/white"
+                        android:layout_marginStart="2dp"
+                        android:padding="4dp"
+                        android:gravity="center"
+                        android:textSize="@dimen/_9sdp"
+                        tools:ignore="HardcodedText" />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/leave_req_list_view_for_leave_approve"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/no_leave_req_found_message_for_leave_approve"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="No Leave Request Found"
+                    android:fontFamily="@font/poppins_bold"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginStart="@dimen/_4sdp"
+                    android:layout_marginEnd="@dimen/_4sdp"
+                    android:layout_marginBottom="@dimen/_8sdp"
+                    android:textSize="@dimen/_12sdp"
+                    tools:ignore="HardcodedText" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_indicator_search_leave_request"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:layout_centerVertical="true"
+        android:indeterminate="true"
+        android:layout_gravity="center"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/reload_page_button_leave_request"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:text="Retry"
+        android:layout_marginTop="@dimen/_8sdp"
+        app:cornerRadius="@dimen/_10sdp"
+        android:fontFamily="@font/patua_one"
+        android:layout_centerHorizontal="true"
+        tools:ignore="HardcodedText" />
+
+</RelativeLayout>

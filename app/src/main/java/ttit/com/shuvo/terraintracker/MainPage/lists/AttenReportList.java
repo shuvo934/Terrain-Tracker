@@ -17,11 +17,11 @@ public class AttenReportList {
     private String inLon;
     private String outLat;
     private String outLon;
-    private Blob blob;
+    private byte[] blob;
     private String elr_id;
     private String dayName;
 
-    public AttenReportList(String date, String status, String shift, String punchLoc, String inTime, String inStatus, String outTime, String outStatus, String attStatusColor, String inLat, String inLon, String outLat, String outLon, Blob blob, String  elr_id, String dayName) {
+    public AttenReportList(String date, String status, String shift, String punchLoc, String inTime, String inStatus, String outTime, String outStatus, String attStatusColor, String inLat, String inLon, String outLat, String outLon, byte[] blob, String  elr_id, String dayName) {
         this.date = date;
         this.status = status;
         this.shift = shift;
@@ -144,11 +144,11 @@ public class AttenReportList {
         this.outLon = outLon;
     }
 
-    public Blob getBlob() {
+    public byte[] getBlob() {
         return blob;
     }
 
-    public void setBlob(Blob blob) {
+    public void setBlob(byte[] blob) {
         this.blob = blob;
     }
 

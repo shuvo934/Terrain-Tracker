@@ -1,111 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".timeline.TimeLineActivity"
+    android:background="@color/statusBarcoloRSecond"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <devs.mulham.horizontalcalendar.HorizontalCalendarView
-        android:id="@+id/calendarView"
+    <LinearLayout
         android:layout_width="match_parent"
-        app:textColorNormal="@color/cardColor"
-        android:layout_height="wrap_content"
-        android:background="@color/calenderColorNormal"
-        app:textColorSelected="#FFFF"
-        app:selectorColor="@color/statusBarcoloRSecond"
-        app:selectedDateBackground="@color/statusBarcoloRSecond"/>
+        android:layout_height="match_parent"
+        tools:context=".timeline.TimeLineActivity"
+        android:background="@color/white"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="350dp"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="2dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        app:cardBackgroundColor="@color/white">
-        <fragment
-            xmlns:map="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
+        <devs.mulham.horizontalcalendar.HorizontalCalendarView
+            android:id="@+id/calendarView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+            app:textColorNormal="@color/cardColor"
+            android:layout_height="wrap_content"
+            android:background="@color/calenderColorNormal"
+            app:textColorSelected="#FFFF"
+            app:selectorColor="@color/statusBarcoloRSecond"
+            app:selectedDateBackground="@color/statusBarcoloRSecond"/>
 
-    </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="2dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            app:cardBackgroundColor="@color/white">
+            <fragment
+                xmlns:map="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/white"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp">
+        </androidx.cardview.widget.CardView>
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scrollview_data"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="vertical"
-            >
+            app:cardCornerRadius="10dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/white"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp">
 
-            <LinearLayout
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scrollview_data"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:scrollbars="vertical"
+                >
 
-                <TextView
-                    android:id="@+id/date_text"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_medium"
-                    android:gravity="center"
-                    android:text="Today's Date"
-                    android:textSize="20sp"
-                    android:layout_marginBottom="5dp"
-                    android:textColor="@color/textDarkBlue"
-                    android:textStyle="bold" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/no_record_msg"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto"
-                    android:gravity="center"
-                    android:visibility="gone"
-                    android:text="No Record Found"
-                    android:textSize="16sp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="5dp"
-                    android:textColor="@color/textDarkBlue"
-                    android:textStyle="bold" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_height="match_parent">
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/location_details_review"
+                    <TextView
+                        android:id="@+id/date_text"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_medium"
+                        android:gravity="center"
+                        android:text="Today's Date"
+                        android:textSize="20sp"
+                        android:layout_marginBottom="5dp"
+                        android:textColor="@color/textDarkBlue"
+                        android:textStyle="bold" />
 
-                </RelativeLayout>
+                    <TextView
+                        android:id="@+id/no_record_msg"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
+                        android:gravity="center"
+                        android:visibility="gone"
+                        android:text="No Record Found"
+                        android:textSize="16sp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:textColor="@color/textDarkBlue"
+                        android:textStyle="bold" />
 
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_height="match_parent">
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/location_details_review"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
 
-    </androidx.cardview.widget.CardView>
+                    </RelativeLayout>
 
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
 
+        </androidx.cardview.widget.CardView>
 
-</LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
 

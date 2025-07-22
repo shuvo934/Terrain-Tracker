@@ -3,9 +3,9 @@ package ttit.com.shuvo.terraintracker.livelocation;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -30,17 +29,13 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -58,7 +53,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.ui.IconGenerator;
 
@@ -66,7 +60,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -75,12 +68,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import ttit.com.shuvo.terraintracker.R;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static ttit.com.shuvo.terraintracker.OracleConnection.DEFAULT_USERNAME;
+import static ttit.com.shuvo.terraintracker.Constants.api_url_front;
 
 public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -88,11 +83,10 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationManager locationManager;
     LocationRequest locationRequest;
-    LocationCallback locationCallback;
     private GoogleApiClient googleApiClient;
     String emp_id = "";
     String emp_name = "";
-    String url = "http://103.56.208.123:8001/apex/tracker/rest-v4/getloctracker/?empno=";
+    String url;
     boolean allEmp = false;
     String div_id = "";
     String dep_id = "";
@@ -119,7 +113,7 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
     CardView moveEmpLoc;
     LatLng empLatLng;
     Boolean emplatlngChange = false;
-
+    Logger logger = Logger.getLogger(EmpLiveLocation.class.getName());
     Handler timerHandler = new Handler();
     long startTime = 0;
     Runnable timerRunnable = new Runnable() {
@@ -130,7 +124,7 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
             int seconds = (int) (millis / 1000);
             int minutes = seconds / 60;
             seconds = seconds % 60;
-
+            System.out.println(minutes+" : "+seconds);
             getUpdatedLocation();
             //Toast.makeText(getApplicationContext(), String.format("%d:%02d", minutes, seconds),Toast.LENGTH_SHORT).show();
             //timerTextView.setText(String.format("%d:%02d", minutes, seconds));
@@ -146,6 +140,7 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.live_map);
+        assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -162,22 +157,19 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
 
 
         iconGenerator = new IconGenerator(EmpLiveLocation.this);
-        iconGenerator.setBackground(EmpLiveLocation.this.getDrawable(R.drawable.bg_custom_marker));
+        iconGenerator.setBackground(AppCompatResources.getDrawable(EmpLiveLocation.this,R.drawable.bg_custom_marker));
         inflatedView = View.inflate(EmpLiveLocation.this, R.layout.marker_custom, null);
-        textView = (TextView) inflatedView.findViewById(R.id.test_text);
+        textView = inflatedView.findViewById(R.id.test_text);
 
-        moveEmpLoc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (empLatLng != null) {
-                    emplatlngChange = false;
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(empLatLng,15));
-                    moveEmpLoc.setVisibility(View.GONE);
-                }
+        moveEmpLoc.setOnClickListener(v -> {
+            if (empLatLng != null) {
+                emplatlngChange = false;
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(empLatLng,15));
+                moveEmpLoc.setVisibility(View.GONE);
             }
         });
 
-        List<String> categories = new ArrayList<String>();
+        List<String> categories = new ArrayList<>();
         categories.add("NORMAL");
         categories.add("TRAFFIC");
         categories.add("SATELLITE");
@@ -185,7 +177,7 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
         categories.add("HYBRID");
         categories.add("NO LANDMARK");
 
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, categories);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, categories);
 
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -202,7 +194,7 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
      * installed Google Play services and returned to the app.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
         enableGPS();
@@ -212,23 +204,15 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
 //        startTime = System.currentTimeMillis();
 //        timerHandler.postDelayed(timerRunnable, 0);
 
-        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-            @Override
-            public void onCameraMove() {
+        mMap.setOnCameraMoveListener(() -> {
 
-                if (emplatlngChange && !allEmp) {
-                    moveEmpLoc.setVisibility(View.VISIBLE);
-                }
-
-
+            if (emplatlngChange && !allEmp) {
+                moveEmpLoc.setVisibility(View.VISIBLE);
             }
+
+
         });
-        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
-            @Override
-            public void onCameraIdle() {
-                emplatlngChange = true;
-            }
-        });
+        mMap.setOnCameraIdleListener(() -> emplatlngChange = true);
 
         layer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -444,12 +428,6 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
 
 
     @Override
-    public void onBackPressed() {
-//        timerHandler.removeCallbacks(timerRunnable);
-        finish();
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
         timerHandler.removeCallbacks(timerRunnable);
@@ -480,240 +458,220 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
 
     public void getUpdatedLocation() {
 
-        if (DEFAULT_USERNAME.equals("IKGL")) {
-            if (!allEmp) {
-                url = "http://103.56.208.123:8001/apex/tracker/rest-v4/getloctracker/?empno="+ emp_id;
-            } else {
-                url = "http://103.56.208.123:8001/apex/tracker/rest-v4/getempv10/?div_id="+div_id+"&dept_id="+dep_id+"&desig_id="+des_id;
-
-            }
+        if (!allEmp) {
+            url = api_url_front +"tracker/get_live_loc?emp_id="+ emp_id;
         }
-        else if (DEFAULT_USERNAME.equals("TTRAMS")){
-            if (!allEmp) {
-                url = "http://103.56.208.123:8001/apex/ttrams/tracker/get_live_loc?emp_id="+ emp_id;
-            }
-            else {
-                url = "http://103.56.208.123:8001/apex/ttrams/tracker/get_all_emp_location?div_id="+div_id+"&dept_id="+dep_id+"&desig_id="+des_id;
-            }
+        else {
+            url = api_url_front + "tracker/get_all_emp_location?div_id="+div_id+"&dept_id="+dep_id+"&desig_id="+des_id;
         }
-
 
         System.out.println(url);
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, response -> {
 
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    String items = jsonObject.getString("items");
-                    String count = jsonObject.getString("count");
-                    System.out.println("Count: "+ count);
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String items = jsonObject.getString("items");
+                String count = jsonObject.getString("count");
+                System.out.println("Count: "+ count);
 
-                    if (!count.equals("0")) {
-                        JSONArray array = new JSONArray(items);
-                        if (!allEmp) {
+                if (!count.equals("0")) {
+                    JSONArray array = new JSONArray(items);
+                    if (!allEmp) {
 
-                            for (int i = 0 ; i < array.length(); i++) {
-                                JSONObject location = array.getJSONObject(i);
-                                String lat = location.getString("ell_lat");
-                                String lng = location.getString("ell_long");
-                                String time = location.getString("ell_time");
-                                String speed = location.getString("ell_speed");
-                                String adds = location.getString("ell_address");
-                                String acc = location.getString("ell_accuracy");
-                                String bear = location.getString("ell_bearing");
+                        for (int i = 0 ; i < array.length(); i++) {
+                            JSONObject location = array.getJSONObject(i);
+                            String lat = location.getString("ell_lat");
+                            String lng = location.getString("ell_long");
+                            String time = location.getString("ell_time").equals("null") ? "" : location.getString("ell_time");
+                            String speed = location.getString("ell_speed");
+                            String acc = location.getString("ell_accuracy");
+                            String bear = location.getString("ell_bearing");
 
-                                byte[] ptext = location.getString("ell_address").getBytes(ISO_8859_1);
-                                adds = new String(ptext, UTF_8);
+                            byte[] ptext = location.getString("ell_address").getBytes(ISO_8859_1);
+                            String adds = new String(ptext, UTF_8);
 
-                                System.out.println("CHECKING ADDS: "+adds);
+                            System.out.println("CHECKING ADDS: "+adds);
 
-                                System.out.println("LAT: "+ lat);
-                                System.out.println("LNG: "+ lng);
-                                System.out.println("Time: "+ time);
-                                System.out.println("Speed: "+ speed);
-                                System.out.println("Address: "+ adds);
-                                System.out.println("Accuracy: "+ acc);
-                                System.out.println("Bearing: "+ bear);
+                            System.out.println("LAT: "+ lat);
+                            System.out.println("LNG: "+ lng);
+                            System.out.println("Time: "+ time);
+                            System.out.println("Speed: "+ speed);
+                            System.out.println("Address: "+ adds);
+                            System.out.println("Accuracy: "+ acc);
+                            System.out.println("Bearing: "+ bear);
 
-                                //Toast.makeText(getApplicationContext(), adds,Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getApplicationContext(), adds,Toast.LENGTH_SHORT).show();
 
 
-                                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-                                Date date = dateFormat.parse(time);//You will get date object relative to server/client timezone wherever it is parsed
-                                DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm a",Locale.getDefault()); //If you need time just put specific format for time like 'HH:mm:ss'
-                                String dateStr = formatter.format(date);
-                                System.out.println("Converted Date: "+dateStr);
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+                            Date date = dateFormat.parse(time);//You will get date object relative to server/client timezone wherever it is parsed
+                            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm a",Locale.getDefault()); //If you need time just put specific format for time like 'HH:mm:ss'
+                            assert date != null;
+                            String dateStr = formatter.format(date);
+                            System.out.println("Converted Date: "+dateStr);
 
-                                Calendar calendar = Calendar.getInstance();
-                                Date nowDate = calendar.getTime();
+                            Calendar calendar = Calendar.getInstance();
+                            Date nowDate = calendar.getTime();
 
-                                // adding 6 hours
-                                long serverTime = date.getTime() + (1000*60*60*6);
+                            // adding 6 hours
+                            long serverTime = date.getTime() + (1000*60*60*6);
 
-                                long diff = nowDate.getTime() - serverTime;
+                            long diff = nowDate.getTime() - serverTime;
 
-                                long secondsInMilli = 1000;
-                                long minutesInMilli = secondsInMilli * 60;
-                                long hoursInMilli = minutesInMilli * 60;
-                                long daysInMilli = hoursInMilli * 24;
+                            long secondsInMilli = 1000;
+                            long minutesInMilli = secondsInMilli * 60;
+                            long hoursInMilli = minutesInMilli * 60;
+                            long daysInMilli = hoursInMilli * 24;
 
-                                long elapsedDays = diff / daysInMilli;
-                                diff = diff % daysInMilli;
+                            long elapsedDays = diff / daysInMilli;
+                            diff = diff % daysInMilli;
 
-                                long elapsedHours = diff / hoursInMilli;
-                                diff = diff % hoursInMilli;
+                            long elapsedHours = diff / hoursInMilli;
+                            diff = diff % hoursInMilli;
 
-                                long elapsedMinutes = diff / minutesInMilli;
-                                diff = diff % minutesInMilli;
+                            long elapsedMinutes = diff / minutesInMilli;
+                            diff = diff % minutesInMilli;
 
-                                long elapsedSeconds = diff / secondsInMilli;
+                            long elapsedSeconds = diff / secondsInMilli;
 
-                                System.out.println( elapsedDays+ " Days, "+ elapsedHours+" hours, "+ elapsedMinutes+" mins, "+ elapsedSeconds+ " seconds ");
+                            System.out.println( elapsedDays+ " Days, "+ elapsedHours+" hours, "+ elapsedMinutes+" mins, "+ elapsedSeconds+ " seconds ");
 
-                                if (elapsedDays == 0) {
-                                    if (elapsedHours == 0) {
-                                        if (elapsedMinutes == 0) {
-                                            time = "Just now";
-                                        } else {
-                                            time =  elapsedMinutes+" mins ago";
-                                        }
+                            if (elapsedDays == 0) {
+                                if (elapsedHours == 0) {
+                                    if (elapsedMinutes == 0) {
+                                        time = "Just now";
                                     } else {
-                                        time = elapsedHours+" hours "+ elapsedMinutes+" mins ago";
+                                        time =  elapsedMinutes+" mins ago";
                                     }
                                 } else {
-                                    time = elapsedDays +" Days " + elapsedHours+" hours "+ elapsedMinutes+" mins ago";
-                                }
-
-
-                                setLocationMarker(lat,lng,bear,acc,adds,time,speed);
-
-
-                            }
-                        }
-                        else {
-                            allEmpLocationLists = new ArrayList<>();
-
-                            for (int i = 0; i < array.length(); i++) {
-                                JSONObject location = array.getJSONObject(i);
-                                String lat = location.getString("ell_lat");
-                                String lng = location.getString("ell_long");
-                                String time = location.getString("ell_time");
-                                String speed = location.getString("ell_speed");
-                                String adds = location.getString("ell_address");
-                                String acc = location.getString("ell_accuracy");
-                                String bear = location.getString("ell_bearing");
-                                String emp__ID = location.getString("ell_emp_id");
-                                String name = location.getString("emp_name");
-                                String emp__code = location.getString("emp_code");
-
-                                name = name+" ("+emp__code+")";
-
-                                byte[] ptext = location.getString("ell_address").getBytes(ISO_8859_1);
-                                adds = new String(ptext, UTF_8);
-
-                                System.out.println("CHECKING ADDS: "+adds);
-
-                                System.out.println("LAT: "+ lat);
-                                System.out.println("LNG: "+ lng);
-                                System.out.println("Time: "+ time);
-                                System.out.println("Speed: "+ speed);
-                                System.out.println("Address: "+ adds);
-                                System.out.println("Accuracy: "+ acc);
-                                System.out.println("Bearing: "+ bear);
-                                System.out.println("EMP ID: " + emp__ID);
-                                System.out.println("EMP NAME: "+ name);
-
-                                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-                                Date date = dateFormat.parse(time);//You will get date object relative to server/client timezone wherever it is parsed
-                                DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm a",Locale.getDefault()); //If you need time just put specific format for time like 'HH:mm:ss'
-                                String dateStr = formatter.format(date);
-                                System.out.println("Converted Date: "+dateStr);
-
-                                Calendar calendar = Calendar.getInstance();
-                                Date nowDate = calendar.getTime();
-
-                                // adding 6 hours
-                                long serverTime = date.getTime() + (1000*60*60*6);
-
-                                long diff = nowDate.getTime() - serverTime;
-
-                                long secondsInMilli = 1000;
-                                long minutesInMilli = secondsInMilli * 60;
-                                long hoursInMilli = minutesInMilli * 60;
-                                long daysInMilli = hoursInMilli * 24;
-
-                                long elapsedDays = diff / daysInMilli;
-                                diff = diff % daysInMilli;
-
-                                long elapsedHours = diff / hoursInMilli;
-                                diff = diff % hoursInMilli;
-
-                                long elapsedMinutes = diff / minutesInMilli;
-                                diff = diff % minutesInMilli;
-
-                                long elapsedSeconds = diff / secondsInMilli;
-
-                                System.out.println( elapsedDays+ " Days, "+ elapsedHours+" hours, "+ elapsedMinutes+" mins, "+ elapsedSeconds+ " seconds ");
-
-                                if (elapsedDays == 0) {
-                                    if (elapsedHours == 0) {
-                                        if (elapsedMinutes == 0) {
-                                            time = "Just now";
-                                        } else {
-                                            time =  elapsedMinutes+" mins ago";
-                                        }
-                                    } else {
-                                        time = elapsedHours+" hours "+ elapsedMinutes+" mins ago";
-                                    }
-                                } else {
-                                    time = elapsedDays +" Days " + elapsedHours+" hours "+ elapsedMinutes+" mins ago";
-                                }
-
-                                allEmpLocationLists.add(new AllEmpLocationLists(lat,lng,bear,acc,adds,time,speed,name,emp__ID));
-                            }
-
-                            if (allMarkers == null) {
-                                System.out.println("NULL MARKER LIST");
-                                allMarkers = new ArrayList<Marker>();
-                                for (int i = 0; i < array.length(); i++) {
-                                    allMarkers.add(null);
+                                    time = elapsedHours+" hours "+ elapsedMinutes+" mins ago";
                                 }
                             } else {
-                                System.out.println("NOT NULL MARKER LIST");
+                                time = elapsedDays +" Days " + elapsedHours+" hours "+ elapsedMinutes+" mins ago";
                             }
-                            if (allDetailsMarker == null) {
-                                allDetailsMarker = new ArrayList<Marker>();
-                                for (int i = 0; i < array.length(); i++) {
-                                    allDetailsMarker.add(null);
-                                }
-                            }
-                            if (allLocationAccCircle == null) {
 
-                                allLocationAccCircle = new ArrayList<Circle>();
-                                for (int i = 0; i < array.length(); i++) {
-                                    allLocationAccCircle.add(null);
-                                }
-                            }
-                            setLocationMarkerForAll();
+
+                            setLocationMarker(lat,lng,bear,acc,adds,time,speed);
+
+
                         }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Employee Location Not Found",Toast.LENGTH_SHORT).show();
                     }
+                    else {
+                        allEmpLocationLists = new ArrayList<>();
 
-                }
-                catch (JSONException | ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject location = array.getJSONObject(i);
+                            String lat = location.getString("ell_lat");
+                            String lng = location.getString("ell_long");
+                            String time = location.getString("ell_time");
+                            String speed = location.getString("ell_speed");
+                            String acc = location.getString("ell_accuracy");
+                            String bear = location.getString("ell_bearing");
+                            String emp__ID = location.getString("ell_emp_id");
+                            String name = location.getString("emp_name");
+                            String emp__code = location.getString("emp_code");
 
-                Log.i("Error", error.toString());
+                            name = name+" ("+emp__code+")";
+
+                            byte[] ptext = location.getString("ell_address").getBytes(ISO_8859_1);
+                            String adds = new String(ptext, UTF_8);
+
+                            System.out.println("CHECKING ADDS: "+adds);
+
+                            System.out.println("LAT: "+ lat);
+                            System.out.println("LNG: "+ lng);
+                            System.out.println("Time: "+ time);
+                            System.out.println("Speed: "+ speed);
+                            System.out.println("Address: "+ adds);
+                            System.out.println("Accuracy: "+ acc);
+                            System.out.println("Bearing: "+ bear);
+                            System.out.println("EMP ID: " + emp__ID);
+                            System.out.println("EMP NAME: "+ name);
+
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+                            Date date = dateFormat.parse(time);//You will get date object relative to server/client timezone wherever it is parsed
+                            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm a",Locale.getDefault()); //If you need time just put specific format for time like 'HH:mm:ss'
+                            assert date != null;
+                            String dateStr = formatter.format(date);
+                            System.out.println("Converted Date: "+dateStr);
+
+                            Calendar calendar = Calendar.getInstance();
+                            Date nowDate = calendar.getTime();
+
+                            // adding 6 hours
+                            long serverTime = date.getTime() + (1000*60*60*6);
+
+                            long diff = nowDate.getTime() - serverTime;
+
+                            long secondsInMilli = 1000;
+                            long minutesInMilli = secondsInMilli * 60;
+                            long hoursInMilli = minutesInMilli * 60;
+                            long daysInMilli = hoursInMilli * 24;
+
+                            long elapsedDays = diff / daysInMilli;
+                            diff = diff % daysInMilli;
+
+                            long elapsedHours = diff / hoursInMilli;
+                            diff = diff % hoursInMilli;
+
+                            long elapsedMinutes = diff / minutesInMilli;
+                            diff = diff % minutesInMilli;
+
+                            long elapsedSeconds = diff / secondsInMilli;
+
+                            System.out.println( elapsedDays+ " Days, "+ elapsedHours+" hours, "+ elapsedMinutes+" mins, "+ elapsedSeconds+ " seconds ");
+
+                            if (elapsedDays == 0) {
+                                if (elapsedHours == 0) {
+                                    if (elapsedMinutes == 0) {
+                                        time = "Just now";
+                                    } else {
+                                        time =  elapsedMinutes+" mins ago";
+                                    }
+                                } else {
+                                    time = elapsedHours+" hours "+ elapsedMinutes+" mins ago";
+                                }
+                            } else {
+                                time = elapsedDays +" Days " + elapsedHours+" hours "+ elapsedMinutes+" mins ago";
+                            }
+
+                            allEmpLocationLists.add(new AllEmpLocationLists(lat,lng,bear,acc,adds,time,speed,name,emp__ID));
+                        }
+
+                        if (allMarkers == null) {
+                            System.out.println("NULL MARKER LIST");
+                            allMarkers = new ArrayList<>();
+                            for (int i = 0; i < array.length(); i++) {
+                                allMarkers.add(null);
+                            }
+                        } else {
+                            System.out.println("NOT NULL MARKER LIST");
+                        }
+                        if (allDetailsMarker == null) {
+                            allDetailsMarker = new ArrayList<>();
+                            for (int i = 0; i < array.length(); i++) {
+                                allDetailsMarker.add(null);
+                            }
+                        }
+                        if (allLocationAccCircle == null) {
+
+                            allLocationAccCircle = new ArrayList<>();
+                            for (int i = 0; i < array.length(); i++) {
+                                allLocationAccCircle.add(null);
+                            }
+                        }
+                        setLocationMarkerForAll();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Employee Location Not Found",Toast.LENGTH_SHORT).show();
+                }
+
             }
-        });
+            catch (JSONException | ParseException e) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+            }
+        }, error -> Log.i("Error", error.toString()));
 
         requestQueue.add(stringRequest);
     }
@@ -721,7 +679,6 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
     public void zoomToUserLocation() {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
             Log.i("Ekhane", "1");
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -734,24 +691,21 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
         mMap.setMyLocationEnabled(true);
 
         Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
-        locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
+        locationTask.addOnSuccessListener(location -> {
 //                Log.i("lattt", location.toString());
-                LatLng latLng = new LatLng(23.6850, 90.3563);
+            LatLng latLng;
 
 
-                if (location != null) {
-                    latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    System.out.println(latLng);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                } else {
-                    latLng = new LatLng(23.6850, 90.3563);
-                    System.out.println(latLng);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
-                }
-
+            if (location != null) {
+                latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                System.out.println(latLng);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+            } else {
+                latLng = new LatLng(23.6850, 90.3563);
+                System.out.println(latLng);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
             }
+
         });
     }
 
@@ -774,44 +728,40 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
 
             PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi
                     .checkLocationSettings(googleApiClient, builder.build());
-            result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-                @Override
-                public void onResult(LocationSettingsResult result) {
-                    final Status status = result.getStatus();
-                    final LocationSettingsStates state = result
-                            .getLocationSettingsStates();
-                    switch (status.getStatusCode()) {
-                        case LocationSettingsStatusCodes.SUCCESS:
-                            // All location settings are satisfied. The client can
-                            // initialize location
-                            // requests here.
-                            Log.i("Exit", "3");
-                            //info.setText("Done");
-                            zoomToUserLocation();
-                            break;
-                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                            // Location settings are not satisfied. But could be
-                            // fixed by showing the user
-                            // a dialog.
-                            Log.i("Exit", "4");
-                            try {
-                                // Show the dialog by calling
-                                // startResolutionForResult(),
-                                // and check the result in onActivityResult().
-                                status.startResolutionForResult(EmpLiveLocation.this, 1000);
-                            } catch (IntentSender.SendIntentException e) {
-                                // Ignore the error.
-                            }
-                            break;
-                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                            // Location settings are not satisfied. However, we have
-                            // no way to fix the
-                            // settings so we won't show the dialog.
-                            Log.i("Exit", "5");
-                            break;
-                    }
+            result.setResultCallback(result1 -> {
+                final Status status = result1.getStatus();
+                final LocationSettingsStates state = result1
+                        .getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // All location settings are satisfied. The client can
+                        // initialize location
+                        // requests here.
+                        Log.i("Exit", "3");
+                        //info.setText("Done");
+                        zoomToUserLocation();
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied. But could be
+                        // fixed by showing the user
+                        // a dialog.
+                        Log.i("Exit", "4");
+                        try {
+                            // Show the dialog by calling
+                            // startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(EmpLiveLocation.this, 1000);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have
+                        // no way to fix the
+                        // settings so we won't show the dialog.
+                        Log.i("Exit", "5");
+                        break;
                 }
-
             });
 
 
