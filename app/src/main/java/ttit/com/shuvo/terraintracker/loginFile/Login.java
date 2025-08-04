@@ -214,7 +214,7 @@ public class Login extends AppCompatActivity implements CallBackListener {
 
             closeKeyBoard();
 
-            login_failed.setVisibility(View.INVISIBLE);
+            login_failed.setVisibility(View.GONE);
             userName = Objects.requireNonNull(user.getText()).toString();
             password = Objects.requireNonNull(pass.getText()).toString();
 

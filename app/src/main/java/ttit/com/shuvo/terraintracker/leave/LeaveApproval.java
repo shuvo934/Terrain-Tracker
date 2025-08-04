@@ -87,6 +87,7 @@ public class LeaveApproval extends AppCompatActivity implements LeaveSelectedLis
     String total_day = "";
     String reason_desc = "";
     String lc_short_code = "";
+    boolean accessible = false;
 
     String sl_check = "0";
     String approveSuccess = "";
@@ -339,8 +340,10 @@ public class LeaveApproval extends AppCompatActivity implements LeaveSelectedLis
         reason_desc = "";
         lc_id = "";
         lc_short_code = "";
+        accessible = false;
 
         String reqDataUrl = api_url_front +"hrm_dashboard/getLeaveData?p_la_id="+la_id;
+        String check_reqDataUrl = api_url_front +"hrm_dashboard/checkToGetLeaveReqData?p_la_id="+la_id+"&p_usr_name="+user_name;
 
         RequestQueue requestQueue = Volley.newRequestQueue(LeaveApproval.this);
 
@@ -399,7 +402,38 @@ public class LeaveApproval extends AppCompatActivity implements LeaveSelectedLis
             updateInterface();
         });
 
-        requestQueue.add(reqDataReq);
+        StringRequest check_reqDataReq = new StringRequest(Request.Method.GET, check_reqDataUrl, response -> {
+            conn = true;
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String count = jsonObject.getString("count");
+                if (!count.equals("0")) {
+                    accessible = true;
+                }
+
+                if (accessible) {
+                    requestQueue.add(reqDataReq);
+                }
+                else {
+                    connected = true;
+                    updateInterface();
+                }
+            }
+            catch (JSONException e) {
+                connected = false;
+                logger.log(Level.WARNING,e.getMessage(),e);
+                parsing_message = e.getLocalizedMessage();
+                updateInterface();
+            }
+        }, error -> {
+            conn = false;
+            connected = false;
+            logger.log(Level.WARNING,error.getMessage(),error);
+            parsing_message = error.getLocalizedMessage();
+            updateInterface();
+        });
+
+        requestQueue.add(check_reqDataReq);
     }
 
     private void updateInterface() {
@@ -410,29 +444,46 @@ public class LeaveApproval extends AppCompatActivity implements LeaveSelectedLis
                 conn = false;
                 connected = false;
 
-                afterSelecting.setVisibility(View.VISIBLE);
-                afterSelectingButton.setVisibility(View.VISIBLE);
+                if (accessible) {
+                    afterSelecting.setVisibility(View.VISIBLE);
+                    afterSelectingButton.setVisibility(View.VISIBLE);
 
-                name.setText(Objects.requireNonNullElse(emp_name, ""));
+                    name.setText(Objects.requireNonNullElse(emp_name, ""));
 
-                empCode.setText(Objects.requireNonNullElse(emp_id, ""));
+                    empCode.setText(Objects.requireNonNullElse(emp_id, ""));
 
-                appDate.setText(Objects.requireNonNullElse(app_date, ""));
+                    appDate.setText(Objects.requireNonNullElse(app_date, ""));
 
-                title.setText(Objects.requireNonNullElse(call_title, ""));
+                    title.setText(Objects.requireNonNullElse(call_title, ""));
 
-                leaveType.setText(Objects.requireNonNullElse(leave_type, ""));
+                    leaveType.setText(Objects.requireNonNullElse(leave_type, ""));
 
-                leaveBalance.setText(Objects.requireNonNullElse(leave_bal, ""));
+                    leaveBalance.setText(Objects.requireNonNullElse(leave_bal, ""));
 
-                fromDate.setText(Objects.requireNonNullElse(from_date, ""));
+                    fromDate.setText(Objects.requireNonNullElse(from_date, ""));
 
-                toDate.setText(Objects.requireNonNullElse(to_date, ""));
+                    toDate.setText(Objects.requireNonNullElse(to_date, ""));
 
-                totalDays.setText(Objects.requireNonNullElse(total_day, ""));
+                    totalDays.setText(Objects.requireNonNullElse(total_day, ""));
 
-                reason.setText(Objects.requireNonNullElse(reason_desc, ""));
+                    reason.setText(Objects.requireNonNullElse(reason_desc, ""));
+                }
+                else {
+                    req_code_leave = "";
+                    la_id = "";
+                    la_emp_id = "";
+                    requestCodeLeave.setText("");
+                    requestCodeLay.setHint("Select Leave Request Code");
+                    MaterialAlertDialogBuilder alertDialogBuilder = new MaterialAlertDialogBuilder(this);
+                    alertDialogBuilder.setTitle("Not Authorized!")
+                            .setIcon(R.drawable.tracker_logo)
+                            .setMessage("You are not authorized to approve/reject this leave request. Please contact with your HR Administrator.")
+                            .setPositiveButton("OK",((dialog, which) -> dialog.dismiss()));
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+                }
 
+                accessible = false;
                 loading = false;
 
             }

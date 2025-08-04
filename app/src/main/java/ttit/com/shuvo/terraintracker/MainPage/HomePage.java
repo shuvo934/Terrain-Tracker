@@ -413,7 +413,7 @@ public class HomePage extends AppCompatActivity {
 
         divLists = new ArrayList<>();
 
-        String divUrl = api_url_front + "directory/getDivisions";
+        String divUrl = api_url_front + "tracker/getDivisions";
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
@@ -544,7 +544,7 @@ public class HomePage extends AppCompatActivity {
 
         depLists = new ArrayList<>();
 
-        String depUrl = api_url_front + "directory/getDepartments/"+div_id;
+        String depUrl = api_url_front + "tracker/getDepartments?div_id="+div_id;
 
         RequestQueue requestQueue = Volley.newRequestQueue(HomePage.this);
 
@@ -693,7 +693,7 @@ public class HomePage extends AppCompatActivity {
 
         desLists = new ArrayList<>();
 
-        String url = api_url_front + "directory/getDesignations/"+div_id+"/"+dep_id;
+        String url = api_url_front + "tracker/getDesignations?div_id="+div_id+"&dep_Id="+dep_id;
 
         RequestQueue requestQueue = Volley.newRequestQueue(HomePage.this);
 
@@ -826,7 +826,7 @@ public class HomePage extends AppCompatActivity {
         allLive = true;
         empLists = new ArrayList<>();
 
-        String url = api_url_front + "directory/getEmpData?div_id="+div_id+"&dep_id="+dep_id+"&des_id="+des_id;
+        String url = api_url_front + "tracker/getEmployee?div_id="+div_id+"&dep_id="+dep_id+"&des_id="+des_id;
 
         RequestQueue requestQueue = Volley.newRequestQueue(HomePage.this);
 

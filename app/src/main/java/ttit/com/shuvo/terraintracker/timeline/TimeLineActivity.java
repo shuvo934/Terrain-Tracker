@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -24,8 +25,11 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +44,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -63,6 +68,7 @@ import devs.mulham.horizontalcalendar.HorizontalCalendar;
 import devs.mulham.horizontalcalendar.utils.HorizontalCalendarListener;
 import ttit.com.shuvo.terraintracker.MainPage.HomePage;
 import ttit.com.shuvo.terraintracker.R;
+import ttit.com.shuvo.terraintracker.livelocation.EmpLiveLocation;
 import ttit.com.shuvo.terraintracker.progressBar.WaitProgress;
 
 import static ttit.com.shuvo.terraintracker.Constants.api_url_front;
@@ -126,6 +132,8 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
     String tr_option = "1";
     ArrayList<AreaList> areaLists;
 
+    Spinner layer;
+
     Logger logger = Logger.getLogger(HomePage.class.getName());
 
     @Override
@@ -146,6 +154,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         noRecordMsg.setVisibility(View.GONE);
         locationView = findViewById(R.id.location_details_review);
         scrollView = findViewById(R.id.scrollview_data);
+        layer = findViewById(R.id.spinner_layer_timeline);
 
 
         areaLists = new ArrayList<>();
@@ -161,6 +170,20 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         locationView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         locationView.setLayoutManager(layoutManager);
+
+        List<String> categories = new ArrayList<>();
+        categories.add("NORMAL");
+        categories.add("TRAFFIC");
+        categories.add("SATELLITE");
+        categories.add("TERRAIN");
+        categories.add("HYBRID");
+        categories.add("NO LANDMARK");
+
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, categories);
+
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        layer.setAdapter(spinnerAdapter);
     }
 
     /**
@@ -208,6 +231,85 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         });
         // Add a marker in Sydney and move the camera
         mMap.getUiSettings().setZoomControlsEnabled(true);
+
+        layer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String name = parent.getItemAtPosition(position).toString();
+                switch (name) {
+                    case "NORMAL":
+                        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                        try {
+                            // Customise the styling of the base map using a JSON object defined
+                            // in a raw resource file.
+                            boolean success = googleMap.setMapStyle(
+                                    MapStyleOptions.loadRawResourceStyle(
+                                            TimeLineActivity.this, R.raw.normal));
+
+                            if (!success) {
+                                Log.i("Failed ", "Style parsing failed.");
+                            }
+                        } catch (Resources.NotFoundException e) {
+                            Log.e("Style ", "Can't find style. Error: ", e);
+                        }
+                        mMap.setTrafficEnabled(false);
+                        break;
+                    case "SATELLITE":
+                        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                        mMap.setTrafficEnabled(false);
+                        break;
+                    case "TERRAIN":
+                        mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                        mMap.setTrafficEnabled(false);
+                        break;
+                    case "HYBRID":
+                        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                        mMap.setTrafficEnabled(false);
+                        break;
+                    case "TRAFFIC":
+                        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                        try {
+                            // Customise the styling of the base map using a JSON object defined
+                            // in a raw resource file.
+                            boolean success = googleMap.setMapStyle(
+                                    MapStyleOptions.loadRawResourceStyle(
+                                            TimeLineActivity.this, R.raw.normal));
+
+                            if (!success) {
+                                Log.i("Failed ", "Style parsing failed.");
+                            }
+                        } catch (Resources.NotFoundException e) {
+                            Log.e("Style ", "Can't find style. Error: ", e);
+                        }
+                        mMap.setTrafficEnabled(true);
+                        break;
+                    case "NO LANDMARK":
+                        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                        try {
+                            // Customise the styling of the base map using a JSON object defined
+                            // in a raw resource file.
+                            boolean success = googleMap.setMapStyle(
+                                    MapStyleOptions.loadRawResourceStyle(
+                                            TimeLineActivity.this, R.raw.no_landmark));
+
+                            if (!success) {
+                                Log.i("Failed ", "Style parsing failed.");
+                            }
+                        } catch (Resources.NotFoundException e) {
+                            Log.e("Style ", "Can't find style. Error: ", e);
+                        }
+                        mMap.setTrafficEnabled(false);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         Calendar endDates = Calendar.getInstance();
         endDates.add(Calendar.DATE, 0);
@@ -1941,10 +2043,48 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         waitProgress.setCancelable(false);
         conn = false;
         connected = false;
+        trk = new ArrayList<>();
+        blobNotNull = false;
 
         String url = api_url_front + "tracker/getTimeLineByDate?emp_id="+emp_id+"&selected_date="+selectedDate;
+        String pt_url = api_url_front + "hrm_dashboard/getPreTrackData?p_emp_id="+emp_id+"&p_date="+selectedDate;
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
+
+        StringRequest stringRequest1 = new StringRequest(Request.Method.GET, pt_url, response -> {
+            conn = true;
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String items = jsonObject.getString("items");
+                String count = jsonObject.getString("count");
+                if (!count.equals("0")) {
+                    JSONArray array = new JSONArray(items);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject userImageInfo = array.getJSONObject(i);
+                        String lat = userImageInfo.getString("lat");
+                        String lng = userImageInfo.getString("lng");
+                        String MD_TIME = userImageInfo.getString("md_time");
+
+                        String wpt = "\t<wpt lat=\""+ lat +"\" lon=\""+ lng+"\">\n" +
+                                "\t\t<name>TTIT</name>\n" +
+                                "\t\t<time>"+MD_TIME+"</time>\n"+
+                                "\t</wpt>";
+                        trk.add(wpt);
+                    }
+                }
+                connected = true;
+                updateAfterGettingTimeLine();
+            } catch (JSONException e) {
+                connected = false;
+                logger.log(Level.WARNING, e.getMessage(), e);
+                updateAfterGettingTimeLine();
+            }
+        }, error -> {
+            conn = false;
+            connected = false;
+            logger.log(Level.WARNING, error.getMessage(), error);
+            updateAfterGettingTimeLine();
+        });
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, response -> {
             conn = true;
@@ -1982,8 +2122,19 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                         }
                     }
                 }
-                connected = true;
-                updateAfterGettingTimeLine();
+                if (!blobNotNull) {
+                    if (tr_option.equals("1")) {
+                        connected = true;
+                        updateAfterGettingTimeLine();
+                    }
+                    else {
+                        requestQueue.add(stringRequest1);
+                    }
+                }
+                else {
+                    connected = true;
+                    updateAfterGettingTimeLine();
+                }
             } catch (JSONException e) {
                 connected = false;
                 logger.log(Level.WARNING, e.getMessage(), e);
@@ -2031,11 +2182,37 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                 if (blobNotNull) {
                     GpxInMap();
                 } else {
-                    waitProgress.dismiss();
-                    locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
-                    locationView.setAdapter(locationAdapter);
+                    if (tr_option.equals("1")) {
+                        waitProgress.dismiss();
+                        locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this, TimeLineActivity.this);
+                        locationView.setAdapter(locationAdapter);
 //                    Toast.makeText(getApplicationContext(), "No Record Found", Toast.LENGTH_SHORT).show();
-                    noRecordMsg.setVisibility(View.VISIBLE);
+                        noRecordMsg.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        if (!trk.isEmpty()) {
+                            File myExternalFile = new File(getExternalFilesDir(null),downloadFile);
+
+                            try {
+                                GPXFileWriter.writeGpxFile("TTITGenerator", trk, myExternalFile);
+                                GpxInMap();
+                            }
+                            catch (IOException e) {
+                                waitProgress.dismiss();
+                                logger.log(Level.WARNING, e.getMessage(), e);
+                                locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
+                                locationView.setAdapter(locationAdapter);
+                                Toast.makeText(getApplicationContext(), "Failed to Read Data", Toast.LENGTH_SHORT).show();
+                                noRecordMsg.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        else {
+                            waitProgress.dismiss();
+                            locationAdapter = new LocationAdapter(locationNameArrays, TimeLineActivity.this,TimeLineActivity.this);
+                            locationView.setAdapter(locationAdapter);
+                            noRecordMsg.setVisibility(View.VISIBLE);
+                        }
+                    }
                 }
 
                 blobNotNull = false;
