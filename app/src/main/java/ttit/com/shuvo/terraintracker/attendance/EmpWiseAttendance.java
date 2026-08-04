@@ -66,6 +66,7 @@ import ttit.com.shuvo.terraintracker.attendance.araylists.DesignationList;
 import ttit.com.shuvo.terraintracker.attendance.araylists.DivisionList;
 import ttit.com.shuvo.terraintracker.attendance.araylists.EmployeeList;
 import ttit.com.shuvo.terraintracker.timeline.TimeLineActivity;
+import ttit.com.shuvo.terraintracker.utilities.EdgeToEdgeHelper;
 
 public class EmpWiseAttendance extends AppCompatActivity {
 
@@ -173,7 +174,12 @@ public class EmpWiseAttendance extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdgeHelper.enable(this);
         setContentView(R.layout.activity_emp_wise_attendance);
+        EdgeToEdgeHelper.applyInsets(this,
+                findViewById(R.id.emp_wise_att_root),
+                false,
+                false);
         fullLayout = findViewById(R.id.emp_wise_attendance_full_layout);
         circularProgressIndicator = findViewById(R.id.progress_indicator_emp_wise_attendance);
         circularProgressIndicator.setVisibility(GONE);

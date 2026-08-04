@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/statusBarcoloRSecond"
-    android:fitsSystemWindows="true"
+    android:id="@+id/login_root"
     tools:context=".loginFile.Login">
 
     <LinearLayout
@@ -50,13 +50,18 @@
         </LinearLayout>
 
         <ScrollView
+            android:id="@+id/login_scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:clipToPadding="false"
+            android:scrollbars="none">
 
             <LinearLayout
+                android:id="@+id/login_scroll_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <LinearLayout

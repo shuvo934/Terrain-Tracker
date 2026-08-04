@@ -57,6 +57,7 @@ import ttit.com.shuvo.terraintracker.attendance.araylists.DivisionList;
 import ttit.com.shuvo.terraintracker.attendance.araylists.EmployeeList;
 import ttit.com.shuvo.terraintracker.attendance.araylists.MonthSelectionList;
 import ttit.com.shuvo.terraintracker.progressBar.WaitProgress;
+import ttit.com.shuvo.terraintracker.utilities.EdgeToEdgeHelper;
 
 public class DailyAttendance extends AppCompatActivity {
 
@@ -116,7 +117,12 @@ public class DailyAttendance extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdgeHelper.enable(this);
         setContentView(R.layout.activity_daily_attendance);
+        EdgeToEdgeHelper.applyInsets(this,
+                findViewById(R.id.daily_att_root),
+                false,
+                false);
 
         backButton = findViewById(R.id.back_logo_of_daily_attendance);
 
@@ -154,7 +160,6 @@ public class DailyAttendance extends AppCompatActivity {
         dailyAttendanceLists = new ArrayList<>();
         filteredList = new ArrayList<>();
 
-        daListView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getApplicationContext());
         daListView.setLayoutManager(layoutManager);
 

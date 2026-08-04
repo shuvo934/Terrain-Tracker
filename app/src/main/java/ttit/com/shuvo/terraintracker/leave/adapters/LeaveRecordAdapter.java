@@ -175,26 +175,30 @@ public class LeaveRecordAdapter extends RecyclerView.Adapter<LeaveRecordAdapter.
             lvCard = itemView.findViewById(R.id.lv_record_details_card_view);
 
             lvCard.setOnClickListener(view -> {
-                if (mCategoryItem.get(getAdapterPosition()).getLa_approved().equals("0")) {
-                    AppCompatActivity activity = (AppCompatActivity) view.getContext();
-                    Intent intent = new Intent(myContext, LeaveApproval.class);
-                    intent.putExtra("LA_ID", mCategoryItem.get(getAdapterPosition()).getLa_id());
-                    intent.putExtra("LA_EMP_ID", mCategoryItem.get(getAdapterPosition()).getEmp_id());
-                    intent.putExtra("LA_APP_CODE", mCategoryItem.get(getAdapterPosition()).getLa_app_code());
+                int position = getBindingAdapterPosition();
+
+                if (position == RecyclerView.NO_POSITION) {
+                    return;
+                }
+                AppCompatActivity activity = (AppCompatActivity) view.getContext();
+                Intent intent;
+                if (mCategoryItem.get(position).getLa_approved().equals("0")) {
+                    intent = new Intent(myContext, LeaveApproval.class);
+                    intent.putExtra("LA_ID", mCategoryItem.get(position).getLa_id());
+                    intent.putExtra("LA_EMP_ID", mCategoryItem.get(position).getEmp_id());
+                    intent.putExtra("LA_APP_CODE", mCategoryItem.get(position).getLa_app_code());
                     intent.putExtra("FLAG", 1);
-                    activity.startActivity(intent);
                 }
                 else {
-                    AppCompatActivity activity = (AppCompatActivity) view.getContext();
-                    Intent intent = new Intent(myContext, LeaveBalance.class);
-                    intent.putExtra("COA_ID", mCategoryItem.get(getAdapterPosition()).getCoa_id());
-                    intent.putExtra("DIV_ID", mCategoryItem.get(getAdapterPosition()).getJsm_divm_id());
-                    intent.putExtra("DEPT_ID", mCategoryItem.get(getAdapterPosition()).getJsm_dept_id());
-                    intent.putExtra("DESIG_ID", mCategoryItem.get(getAdapterPosition()).getJsm_desig_id());
-                    intent.putExtra("EMP_ID", mCategoryItem.get(getAdapterPosition()).getEmp_id());
+                    intent = new Intent(myContext, LeaveBalance.class);
+                    intent.putExtra("COA_ID", mCategoryItem.get(position).getCoa_id());
+                    intent.putExtra("DIV_ID", mCategoryItem.get(position).getJsm_divm_id());
+                    intent.putExtra("DEPT_ID", mCategoryItem.get(position).getJsm_dept_id());
+                    intent.putExtra("DESIG_ID", mCategoryItem.get(position).getJsm_desig_id());
+                    intent.putExtra("EMP_ID", mCategoryItem.get(position).getEmp_id());
                     intent.putExtra("LAST_DATE", last_date);
-                    activity.startActivity(intent);
                 }
+                activity.startActivity(intent);
             });
         }
     }

@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 import ttit.com.shuvo.terraintracker.R;
 import ttit.com.shuvo.terraintracker.leave.dialogs.LeaveReqSelectionDialog;
 import ttit.com.shuvo.terraintracker.leave.interfaces.LeaveSelectedListener;
+import ttit.com.shuvo.terraintracker.utilities.EdgeToEdgeHelper;
 
 public class LeaveApproval extends AppCompatActivity implements LeaveSelectedListener {
 
@@ -117,7 +118,12 @@ public class LeaveApproval extends AppCompatActivity implements LeaveSelectedLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdgeHelper.enable(this);
         setContentView(R.layout.activity_leave_approval);
+        EdgeToEdgeHelper.applyInsetsIme(this,
+                findViewById(R.id.leave_approve_root),
+                false,
+                false);
 
         fullLayout = findViewById(R.id.leave_approval_full_layout);
         circularProgressIndicator = findViewById(R.id.progress_indicator_leave_approval);
@@ -201,6 +207,7 @@ public class LeaveApproval extends AppCompatActivity implements LeaveSelectedLis
         });
 
         approve.setOnClickListener(v -> {
+            closeKeyBoard();
             if (Integer.parseInt(leave_bal) < Integer.parseInt(total_day)) {
                 MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(LeaveApproval.this);
                 builder.setTitle("Warning!")
@@ -247,7 +254,7 @@ public class LeaveApproval extends AppCompatActivity implements LeaveSelectedLis
         });
 
         reject.setOnClickListener(v -> {
-
+            closeKeyBoard();
             comment_text = Objects.requireNonNull(comments.getText()).toString();
 
             if (comment_text.isEmpty()) {

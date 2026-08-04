@@ -1,8 +1,8 @@
 package ttit.com.shuvo.terraintracker.timeline;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,12 +50,11 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocHol
     @Override
     public LocHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(myContext).inflate(R.layout.location_details, parent, false);
-        LocHolder ammvh = new LocHolder(v,myClickedItem);
-        return ammvh;
+        return new LocHolder(v,myClickedItem);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull LocHolder holder, int position) {
+    public void onBindViewHolder(@NonNull LocHolder holder, @SuppressLint("RecyclerView") int position) {
 
         positionFromAdapter = position;
 
@@ -73,7 +72,8 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocHol
         if (isWay) {
             holder.lastLay.setVisibility(View.GONE);
             holder.midDes.setVisibility(View.GONE);
-            holder.wayTrack.setText("You were in:");
+            String  wtTv = "You were in:";
+            holder.wayTrack.setText(wtTv);
             holder.place.setText(locNA.getFirstLocation());
             //holder.place.setClickable(false);
             holder.endTime.setVisibility(View.GONE);
@@ -90,7 +90,6 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocHol
 
             ArrayList<StoppedLocationTime> stoppedLocationTimes = locNA.getStoppedLocationTimes();
 
-            holder.stoppedView.setHasFixedSize(true);
 
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(myContext);
             holder.stoppedView.setLayoutManager(layoutManager);
@@ -100,7 +99,8 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocHol
         } else {
             holder.lastLay.setVisibility(View.VISIBLE);
             holder.midDes.setVisibility(View.VISIBLE);
-            holder.wayTrack.setText("You went from ");
+            String wtTv = "You went from ";
+            holder.wayTrack.setText(wtTv);
             //holder.place.setClickable(true);
             holder.place.setText(locNA.getFirstLocation());
             holder.lastPlace.setText(locNA.getLastLocation());
@@ -136,25 +136,17 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocHol
 
             ArrayList<StoppedLocationTime> stoppedLocationTimes = locNA.getStoppedLocationTimes();
 
-            holder.stoppedView.setHasFixedSize(true);
 
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(myContext);
             holder.stoppedView.setLayoutManager(layoutManager);
             stoppedLocationAdapter = new StoppedLocationAdapter(stoppedLocationTimes,myContext);
             holder.stoppedView.setAdapter(stoppedLocationAdapter);
-
-
-
-
         }
         System.out.println(firstSelected);
         System.out.println(lastSelected);
         System.out.println(selectedAdapterPosition);
-
         //positionFromAdapter = position;
         System.out.println(positionFromAdapter);
-
-
 
         if(selectedAdapterPosition == position) {
             if (firstSelected && !lastSelected) {
@@ -203,9 +195,6 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocHol
             holder.place.setBackgroundColor(Color.WHITE);
             holder.lastPlace.setBackgroundColor(Color.WHITE);
         }
-
-
-
     }
 
     @Override
@@ -252,59 +241,65 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocHol
 
             this.clickedItem = ci;
 
-            itemView.setOnClickListener(this::onClick);
+            itemView.setOnClickListener(this);
 
 
-            place.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//                    boolean isWay = locationNameArrays.get(getAdapterPosition()).getWay();
-//                    if (!isWay) {
-                        lastSelected = false;
-                        firstSelected = true;
-                        isit = false;
-                        markerClicked = false;
-                        LatLng first = locationNameArrays.get(getAdapterPosition()).getFirstLatLng();
-                        String id = locationNameArrays.get(getAdapterPosition()).getFirstMarkerId();
-                        String type = locationNameArrays.get(getAdapterPosition()).getFirstMarkerType();
-                        if (selectedAdapterPosition != getAdapterPosition()) {
-                            selectedAdapterPosition = getAdapterPosition();
-                        }
-                        TimeLineActivity.LocationCalled(first,id,type);
-                        //notifyDataSetChanged();
-//                    }
+            place.setOnClickListener(v -> {
+                int position = getBindingAdapterPosition();
+
+                if (position == RecyclerView.NO_POSITION) {
+                    return;
                 }
+                lastSelected = false;
+                firstSelected = true;
+                isit = false;
+                markerClicked = false;
+                LatLng first = locationNameArrays.get(position).getFirstLatLng();
+                String id = locationNameArrays.get(position).getFirstMarkerId();
+                String type = locationNameArrays.get(position).getFirstMarkerType();
+                if (selectedAdapterPosition != position) {
+                    selectedAdapterPosition = position;
+                }
+                TimeLineActivity.LocationCalled(first,id,type);
+                    //notifyDataSetChanged();
+//                    }
             });
 
-            lastPlace.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    boolean isWay = locationNameArrays.get(getAdapterPosition()).getWay();
+            lastPlace.setOnClickListener(v -> {
+                int position = getBindingAdapterPosition();
 
-                    if (!isWay) {
-                        firstSelected = false;
-                        lastSelected = true;
-                        isit = false;
-                        markerClicked = false;
-                        LatLng second = locationNameArrays.get(getAdapterPosition()).getSecondLatLng();
-                        String id = locationNameArrays.get(getAdapterPosition()).getLastMarkerId();
-                        String type = locationNameArrays.get(getAdapterPosition()).getSecondMarkerType();
-                        if (selectedAdapterPosition != getAdapterPosition()) {
-                            selectedAdapterPosition = getAdapterPosition();
-                        }
-                        TimeLineActivity.LocationCalled(second,id,type);
-                        //notifyDataSetChanged();
-                    }
-
+                if (position == RecyclerView.NO_POSITION) {
+                    return;
                 }
+                boolean isWay = locationNameArrays.get(position).getWay();
+
+                if (!isWay) {
+                    firstSelected = false;
+                    lastSelected = true;
+                    isit = false;
+                    markerClicked = false;
+                    LatLng second = locationNameArrays.get(position).getSecondLatLng();
+                    String id = locationNameArrays.get(position).getLastMarkerId();
+                    String type = locationNameArrays.get(position).getSecondMarkerType();
+                    if (selectedAdapterPosition != position) {
+                        selectedAdapterPosition = position;
+                    }
+                    TimeLineActivity.LocationCalled(second,id,type);
+                    //notifyDataSetChanged();
+                }
+
             });
 
         }
 
         @Override
         public void onClick(View v) {
-            clickedItem.onCategoryClicked(getAdapterPosition());
-            Log.i("Distance: ", locationNameArrays.get(getAdapterPosition()).getDistance());
+            int position = getBindingAdapterPosition();
+
+            if (position == RecyclerView.NO_POSITION) {
+                return;
+            }
+            clickedItem.onCategoryClicked(position);
         }
     }
     public interface ClickedItem {

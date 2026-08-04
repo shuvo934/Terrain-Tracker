@@ -53,6 +53,7 @@ import ttit.com.shuvo.terraintracker.MainPage.adapters.AttenReportAdapter;
 import ttit.com.shuvo.terraintracker.MainPage.lists.AttenReportList;
 import ttit.com.shuvo.terraintracker.R;
 import ttit.com.shuvo.terraintracker.progressBar.WaitProgress;
+import ttit.com.shuvo.terraintracker.utilities.EdgeToEdgeHelper;
 
 public class EmpAttendance extends AppCompatActivity {
 
@@ -114,7 +115,12 @@ public class EmpAttendance extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdgeHelper.enable(this);
         setContentView(R.layout.activity_emp_attendance);
+        EdgeToEdgeHelper.applyInsets(this,
+                findViewById(R.id.emp_old_att_root),
+                false,
+                false);
 
         pieChart = findViewById(R.id.piechart_attendance);
         refresh = findViewById(R.id.refresh_graph_attendance);
@@ -1116,7 +1122,6 @@ public class EmpAttendance extends AppCompatActivity {
 
                         String dac_late_after = attRepInfo.getString("dac_late_after");
                         String dac_early_before = attRepInfo.getString("dac_early_before");
-//                        String dac_end_time = attRepInfo.getString("dac_end_time");
 
                         String dac_out_date_time = attRepInfo.getString("dac_out_date_time")
                                 .equals("null") ? null : attRepInfo.getString("dac_out_date_time");
@@ -1126,23 +1131,13 @@ public class EmpAttendance extends AppCompatActivity {
                         String statusShort = attRepInfo.getString("dac_attn_status")
                                 .equals("null") ? null : attRepInfo.getString("dac_attn_status");
 
-//                        String month_year = attRepInfo.getString("month_year");
-//                        String dac_overtime_avail_flag = attRepInfo.getString("dac_overtime_avail_flag");
-
                         String lc_name = attRepInfo.getString("lc_name")
                                 .equals("null") ? null : attRepInfo.getString("lc_name");
 
-//                        String dac_notes = attRepInfo.getString("dac_notes");
                         String osm_name = attRepInfo.getString("osm_name")
                                 .equals("null") ? null : attRepInfo.getString("osm_name");
                         String coa_name = attRepInfo.getString("coa_name")
                                 .equals("null") ? null : attRepInfo.getString("coa_name");
-//                        String dac_ams_mechine_code = attRepInfo.getString("dac_ams_mechine_code");
-//                        String coa_id = attRepInfo.getString("coa_id");
-//                        String dac_late_flag = attRepInfo.getString("dac_late_flag");
-//                        String dac_leave_consum_lc_id = attRepInfo.getString("dac_leave_consum_lc_id");
-//                        String dac_leave_type = attRepInfo.getString("dac_leave_type");
-//                        String dac_date = attRepInfo.getString("dac_date");
 
                         String inCode = attRepInfo.getString("in_machine_coa_id")
                                 .equals("null") ? null : attRepInfo.getString("in_machine_coa_id");
@@ -1530,25 +1525,12 @@ public class EmpAttendance extends AppCompatActivity {
                 dataSet.setColors(ColorTemplate.createColors(num));
 
 
-//                pieChart.setUsePercentValues(true);
-
-
                 pieChart.setData(data);
                 pieChart.invalidate();
 
                 report.setVisibility(View.VISIBLE);
                 attenReportAdapter = new AttenReportAdapter(attenReportLists, EmpAttendance.this);
                 reportview.setAdapter(attenReportAdapter);
-                //setListViewHeightBasedOnChildren(reportview);
-//                int originalItemSize = attenReportLists.size();
-//
-//                ViewGroup.LayoutParams params = reportview.getLayoutParams();
-//
-//                if (attenReportLists.size() > originalItemSize ){
-//                    params.height = params.height + 100;
-//                    originalItemSize  = attenReportLists.size();
-//                    reportview.setLayoutParams(params);
-//                }
 
                 if (attenReportLists.isEmpty()) {
                     attenDataNot.setVisibility(View.VISIBLE);

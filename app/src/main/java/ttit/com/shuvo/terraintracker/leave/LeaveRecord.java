@@ -14,15 +14,11 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import androidx.cardview.widget.CardView;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -56,6 +52,7 @@ import ttit.com.shuvo.terraintracker.attendance.araylists.DivisionList;
 import ttit.com.shuvo.terraintracker.attendance.araylists.EmployeeList;
 import ttit.com.shuvo.terraintracker.leave.adapters.LeaveRecordAdapter;
 import ttit.com.shuvo.terraintracker.leave.arraylists.LeaveRecList;
+import ttit.com.shuvo.terraintracker.utilities.EdgeToEdgeHelper;
 
 public class LeaveRecord extends AppCompatActivity {
 
@@ -115,7 +112,12 @@ public class LeaveRecord extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdgeHelper.enable(this);
         setContentView(R.layout.activity_leave_record);
+        EdgeToEdgeHelper.applyInsets(this,
+                findViewById(R.id.leave_rec_root),
+                false,
+                false);
 
         fullLayout = findViewById(R.id.leave_record_full_layout);
         circularProgressIndicator = findViewById(R.id.progress_indicator_leave_record);
@@ -156,7 +158,6 @@ public class LeaveRecord extends AppCompatActivity {
         leaveRecLists = new ArrayList<>();
         filteredList = new ArrayList<>();
 
-        lvRecListView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getApplicationContext());
         lvRecListView.setLayoutManager(layoutManager);
 

@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 import ttit.com.shuvo.terraintracker.R;
 import ttit.com.shuvo.terraintracker.attendance.dialogs.AttUpReqSelectionDialog;
 import ttit.com.shuvo.terraintracker.attendance.interfaces.AttendanceUpReqSelectedListener;
+import ttit.com.shuvo.terraintracker.utilities.EdgeToEdgeHelper;
 
 public class AttendanceUpdateReqApproval extends AppCompatActivity implements AttendanceUpReqSelectedListener {
 
@@ -91,7 +92,7 @@ public class AttendanceUpdateReqApproval extends AppCompatActivity implements At
     private Boolean isApprovedd = false;
     private Boolean isApprovedChecked = false;
     private Boolean appppppprrrrr = false;
-    String approveSuccess = "";
+    String approveSuccessMsg = "";
 
     private Boolean isRejected = false;
     private Boolean isRejectedChecked = false;
@@ -135,7 +136,12 @@ public class AttendanceUpdateReqApproval extends AppCompatActivity implements At
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdgeHelper.enable(this);
         setContentView(R.layout.activity_attendance_update_req_approval);
+        EdgeToEdgeHelper.applyInsetsIme(this,
+                findViewById(R.id.att_up_req_approve_root),
+                false,
+                false);
 
         fullLayout = findViewById(R.id.att_up_approval_full_layout);
         circularProgressIndicator = findViewById(R.id.progress_indicator_att_up_approval);
@@ -233,6 +239,7 @@ public class AttendanceUpdateReqApproval extends AppCompatActivity implements At
         });
 
         approve.setOnClickListener(v -> {
+            closeKeyBoard();
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(AttendanceUpdateReqApproval.this);
             builder.setTitle("Approve Request!")
                     .setMessage("Do you want to approve this request?")
@@ -248,6 +255,7 @@ public class AttendanceUpdateReqApproval extends AppCompatActivity implements At
         });
 
         reject.setOnClickListener(v -> {
+            closeKeyBoard();
             comment_text = Objects.requireNonNull(comments.getText()).toString();
             if (comment_text.isEmpty()) {
                 Toast.makeText(getApplicationContext(), "Please mention reason for reject", Toast.LENGTH_SHORT).show();
@@ -648,23 +656,27 @@ public class AttendanceUpdateReqApproval extends AppCompatActivity implements At
                 String updated_req = jsonObject.getString("updated_req");
                 if (string_out.equals("Successfully Created")) {
                     isApprovedChecked = true;
+                    approveSuccessMsg = updated_req;
                     isApprovedd = updated_req.equals("true");
                 }
                 else {
                     System.out.println(string_out);
                     isApprovedChecked = false;
+                    parsing_message = string_out;
                 }
                 updateLayout();
             }
             catch (JSONException e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
                 isApprovedChecked = false;
+                parsing_message = e.getLocalizedMessage();
                 updateLayout();
             }
         }, error -> {
             logger.log(Level.WARNING, error.getMessage(), error);
             appppppprrrrr = false;
             isApprovedChecked = false;
+            parsing_message = error.getLocalizedMessage();
             updateLayout();
         }) {
             @Override
@@ -710,12 +722,14 @@ public class AttendanceUpdateReqApproval extends AppCompatActivity implements At
             catch (JSONException e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
                 isApprovedChecked = false;
+                parsing_message = e.getLocalizedMessage();
                 updateLayout();
             }
         }, error -> {
             logger.log(Level.WARNING, error.getMessage(), error);
             appppppprrrrr = false;
             isApprovedChecked = false;
+            parsing_message = error.getLocalizedMessage();
             updateLayout();
         });
 
@@ -724,11 +738,11 @@ public class AttendanceUpdateReqApproval extends AppCompatActivity implements At
 
     private void updateLayout() {
         if (appppppprrrrr) {
-            if (isApprovedd) {
+            if (isApprovedChecked) {
                 fullLayout.setVisibility(View.GONE);
                 circularProgressIndicator.setVisibility(View.GONE);
                 loading = false;
-                if (isApprovedChecked) {
+                if (isApprovedd) {
                     appppppprrrrr = false;
                     isApprovedd = false;
                     isApprovedChecked = false;
@@ -747,7 +761,14 @@ public class AttendanceUpdateReqApproval extends AppCompatActivity implements At
                 else {
                     fullLayout.setVisibility(View.VISIBLE);
                     circularProgressIndicator.setVisibility(View.GONE);
-                    Toast.makeText(getApplicationContext(), "Already Updated by Another User", Toast.LENGTH_SHORT).show();
+                    MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(AttendanceUpdateReqApproval.this);
+                    builder.setMessage(approveSuccessMsg)
+                            .setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
+
+                    AlertDialog alert = builder.create();
+                    alert.setCancelable(false);
+                    alert.setCanceledOnTouchOutside(false);
+                    alert.show();
                 }
             }
             else {
@@ -876,22 +897,26 @@ public class AttendanceUpdateReqApproval extends AppCompatActivity implements At
                 String updated_req = jsonObject.getString("updated_req");
                 if (string_out.equals("Successfully Created")) {
                     isRejectedChecked = true;
+                    rejectSuccess = updated_req;
                     isRejected = updated_req.equals("true");
                 }
                 else {
                     System.out.println(string_out);
+                    parsing_message = string_out;
                     isRejectedChecked = false;
                 }
                 updateAfterReject();
             }
             catch (JSONException e) {
                 isRejectedChecked = false;
+                parsing_message = e.getLocalizedMessage();
                 updateAfterReject();
             }
         }, error -> {
             logger.log(Level.WARNING, error.getMessage(), error);
             rrreeejjjeecctt = false;
             isRejectedChecked = false;
+            parsing_message = error.getLocalizedMessage();
             updateAfterReject();
         }) {
             @Override
@@ -935,12 +960,14 @@ public class AttendanceUpdateReqApproval extends AppCompatActivity implements At
             catch (JSONException e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
                 isRejectedChecked = false;
+                parsing_message = e.getLocalizedMessage();
                 updateAfterReject();
             }
         }, error -> {
             logger.log(Level.WARNING, error.getMessage(), error);
             rrreeejjjeecctt = false;
             isRejectedChecked = false;
+            parsing_message = error.getLocalizedMessage();
             updateAfterReject();
         });
 
@@ -949,11 +976,11 @@ public class AttendanceUpdateReqApproval extends AppCompatActivity implements At
 
     private void updateAfterReject() {
         if (rrreeejjjeecctt) {
-            if (isRejected) {
+            if (isRejectedChecked) {
                 fullLayout.setVisibility(View.GONE);
                 circularProgressIndicator.setVisibility(View.GONE);
                 loading = false;
-                if (isRejectedChecked) {
+                if (isRejected) {
                     rrreeejjjeecctt = false;
                     isRejected = false;
                     isRejectedChecked = false;

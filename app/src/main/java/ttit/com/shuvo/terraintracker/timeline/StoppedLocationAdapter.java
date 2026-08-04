@@ -41,8 +41,7 @@ public class StoppedLocationAdapter extends RecyclerView.Adapter<StoppedLocation
     @Override
     public SLAHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(myContext).inflate(R.layout.stopped_location_details, parent, false);
-        SLAHolder ammvh = new SLAHolder(v);
-        return ammvh;
+        return new SLAHolder(v);
     }
 
     @Override
@@ -102,28 +101,27 @@ public class StoppedLocationAdapter extends RecyclerView.Adapter<StoppedLocation
             place = itemView.findViewById(R.id.stopped_place_text);
             time = itemView.findViewById(R.id.stopped_when_time);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    isit = true;
-                    firstSelected = false;
-                    lastSelected = false;
-                    markerClicked = false;
-                    LatLng latLng = stoppedLocationTimes.get(getAdapterPosition()).getLatLng();
-                    String id = stoppedLocationTimes.get(getAdapterPosition()).getMarker_id();
-                    String type = stoppedLocationTimes.get(getAdapterPosition()).getMarkerType();
-                    selectedAdapterPosition = Integer.parseInt(stoppedLocationTimes.get(getAdapterPosition()).getPositionFromMain());
+            itemView.setOnClickListener(v -> {
+                int position = getBindingAdapterPosition();
 
-                    if (selectedChildAdapterPosition != getAdapterPosition()) {
-                        selectedChildAdapterPosition = getAdapterPosition();
-                    }
-                    TimeLineActivity.LocationCalled(latLng,id,type);
-                    //notifyDataSetChanged();
+                if (position == RecyclerView.NO_POSITION) {
+                    return;
                 }
+                isit = true;
+                firstSelected = false;
+                lastSelected = false;
+                markerClicked = false;
+                LatLng latLng = stoppedLocationTimes.get(position).getLatLng();
+                String id = stoppedLocationTimes.get(position).getMarker_id();
+                String type = stoppedLocationTimes.get(position).getMarkerType();
+                selectedAdapterPosition = Integer.parseInt(stoppedLocationTimes.get(position).getPositionFromMain());
+
+                if (selectedChildAdapterPosition != position) {
+                    selectedChildAdapterPosition = position;
+                }
+                TimeLineActivity.LocationCalled(latLng,id,type);
+                //notifyDataSetChanged();
             });
-
         }
-
-
     }
 }

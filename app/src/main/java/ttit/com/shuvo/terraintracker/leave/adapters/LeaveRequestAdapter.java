@@ -1,5 +1,6 @@
 package ttit.com.shuvo.terraintracker.leave.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,7 +68,12 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
 
         @Override
         public void onClick(View v) {
-            mClickedItem.onItemClicked(getAdapterPosition());
+            int position = getBindingAdapterPosition();
+
+            if (position == RecyclerView.NO_POSITION) {
+                return;
+            }
+            mClickedItem.onItemClicked(position);
         }
     }
 
@@ -75,6 +81,7 @@ public class LeaveRequestAdapter extends RecyclerView.Adapter<LeaveRequestAdapte
         void onItemClicked(int Position);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void filterList(ArrayList<LeaveRequestList> filteredList) {
         mCategoryItem = filteredList;
         notifyDataSetChanged();

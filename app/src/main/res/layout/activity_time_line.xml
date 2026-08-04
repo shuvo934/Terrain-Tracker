@@ -7,7 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".timeline.TimeLineActivity"
     android:background="@color/statusBarcoloRSecond"
-    android:fitsSystemWindows="true"
+    android:id="@+id/time_line_root"
     android:orientation="vertical">
 
     <LinearLayout

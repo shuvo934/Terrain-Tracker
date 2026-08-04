@@ -30,7 +30,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -53,6 +52,8 @@ import ttit.com.shuvo.terraintracker.R;
 import ttit.com.shuvo.terraintracker.attendance.araylists.BranchList;
 import ttit.com.shuvo.terraintracker.livelocation.EmpLiveLocation;
 import ttit.com.shuvo.terraintracker.timeline.TimeLineActivity;
+import ttit.com.shuvo.terraintracker.utilities.EdgeToEdgeHelper;
+
 import static ttit.com.shuvo.terraintracker.dash_board.Dashboard.testDataBlob;
 
 
@@ -134,7 +135,12 @@ public class HomePage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdgeHelper.enable(this);
         setContentView(R.layout.activity_home_page);
+        EdgeToEdgeHelper.applyInsets(this,
+                findViewById(R.id.emp_track_rec_root),
+                false,
+                false);
 
         fullLayout = findViewById(R.id.emp_track_record_full_layout);
         circularProgressIndicator = findViewById(R.id.progress_indicator_emp_track_record);
@@ -1086,10 +1092,7 @@ public class HomePage extends AppCompatActivity {
                     msgTimeline.setVisibility(VISIBLE);
                 }
                 if (imageFound) {
-                    Glide.with(HomePage.this)
-                            .load(selectedImage)
-                            .fitCenter()
-                            .into(userImage);
+                    userImage.setImageBitmap(selectedImage);
                 }
                 else {
                     userImage.setImageResource(R.drawable.profile);
@@ -1722,10 +1725,7 @@ public class HomePage extends AppCompatActivity {
 //                    setData.setVisibility(View.GONE);
 //                }
 //                if (imageFound) {
-//                    Glide.with(HomePage.this)
-//                            .load(selectedImage)
-//                            .fitCenter()
-//                            .into(userImage);
+//                    userImage.setImageResource(R.drawable.profile);
 //                }
 //                else {
 //                    userImage.setImageResource(R.drawable.profile);

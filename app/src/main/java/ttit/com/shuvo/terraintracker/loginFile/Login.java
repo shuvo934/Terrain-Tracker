@@ -29,9 +29,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -44,6 +42,7 @@ import ttit.com.shuvo.terraintracker.dash_board.Dashboard;
 import ttit.com.shuvo.terraintracker.loginFile.dialoges.SelectCenterDialogue;
 import ttit.com.shuvo.terraintracker.loginFile.interfaces.CallBackListener;
 import ttit.com.shuvo.terraintracker.progressBar.WaitProgress;
+import ttit.com.shuvo.terraintracker.utilities.EdgeToEdgeHelper;
 
 import static ttit.com.shuvo.terraintracker.Constants.CENTER_API;
 import static ttit.com.shuvo.terraintracker.Constants.CompanyName;
@@ -117,7 +116,12 @@ public class Login extends AppCompatActivity implements CallBackListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdgeHelper.enable(this);
         setContentView(R.layout.activity_login);
+        EdgeToEdgeHelper.applyInsetsIme(this,
+                findViewById(R.id.login_root),
+                false,
+                false);
 
         userInfoLists = new ArrayList<>();
         userDesignations = new ArrayList<>();
@@ -249,41 +253,50 @@ public class Login extends AppCompatActivity implements CallBackListener {
     public void readApiText() {
         waitProgress.show(getSupportFragmentManager(), "WaitBar");
         waitProgress.setCancelable(false);
-        new Thread(() -> {
-            urls = new ArrayList<>();
-            try {
-                URL url = new URL(text_url);
-                HttpURLConnection conn=(HttpURLConnection) url.openConnection();
-                conn.setConnectTimeout(60000); // timing out in a minute
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String str;
-                while ((str = in.readLine()) != null) {
-                    urls.add(new AllUrlList(str,false));
-                }
-                in.close();
-            }
-            catch (Exception e) {
-                urls.add(new AllUrlList("http://103.56.208.123:8001/apex/ttrams/",false));
-                urls.add(new AllUrlList("http://103.56.208.123:8001/apex/mnm/",false));
-                urls.add(new AllUrlList("http://103.56.208.123:8001/apex/tracker/",false));
-                Log.d("MyTag",e.toString());
-            }
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
 
-            runOnUiThread(() -> {
-                if (urls.isEmpty()) {
-                    urls.add(new AllUrlList("http://103.56.208.123:8001/apex/ttrams/",false));
-                    urls.add(new AllUrlList("http://103.56.208.123:8001/apex/mnm/",false));
-                    urls.add(new AllUrlList("http://103.56.208.123:8001/apex/tracker/",false));
-                }
-                else {
-                    for (int i = 0; i < urls.size(); i++) {
-                        System.out.println(urls.get(i).getUrls());
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, text_url, response -> {
+            urls = new ArrayList<>();
+            try (BufferedReader reader = new BufferedReader(new StringReader(response))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    line = line.trim();
+                    if (!line.isEmpty()) {
+                        urls.add(new AllUrlList(line, false));
                     }
                 }
-                waitProgress.dismiss();
-            });
+            }
+            catch (Exception e) {
+                Log.e("READ_API_TEXT", "Could not parse server list", e);
+                addFallbackUrls();
+            }
+            if (urls.isEmpty()) {
+                addFallbackUrls();
+            }
 
-        }).start();
+            for (AllUrlList item : urls) {
+                Log.d("SERVER_URL", item.getUrls());
+            }
+            waitProgress.dismiss();
+
+        }, volleyError -> {
+            Log.e("READ_API_TEXT", "Could not download server list", volleyError);
+            addFallbackUrls();
+            waitProgress.dismiss();
+        });
+
+        requestQueue.add(stringRequest);
+    }
+
+    private void addFallbackUrls() {
+        if (urls == null) {
+            urls = new ArrayList<>();
+        }
+
+        urls.clear();
+
+        urls.add(new AllUrlList("http://103.56.208.123:8001/apex/ttrams/", false));
+        urls.add(new AllUrlList("http://103.56.208.123:8001/apex/mnm/", false));
     }
 
     private void closeKeyBoard () {

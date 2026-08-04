@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/statusBarcoloRSecond"
-    android:fitsSystemWindows="true"
+    android:id="@+id/dashboard_root"
     tools:context=".dash_board.Dashboard">
 
     <androidx.drawerlayout.widget.DrawerLayout

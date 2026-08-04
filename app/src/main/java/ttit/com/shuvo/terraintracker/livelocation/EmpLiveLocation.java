@@ -31,17 +31,14 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStates;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -72,18 +69,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ttit.com.shuvo.terraintracker.R;
+import ttit.com.shuvo.terraintracker.utilities.EdgeToEdgeHelper;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static ttit.com.shuvo.terraintracker.Constants.api_url_front;
 
-public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCallback{
 
     private GoogleMap mMap;
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationManager locationManager;
     LocationRequest locationRequest;
-    private GoogleApiClient googleApiClient;
     String emp_id = "";
     String emp_name = "";
     String url;
@@ -126,8 +123,6 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
             seconds = seconds % 60;
             System.out.println(minutes+" : "+seconds);
             getUpdatedLocation();
-            //Toast.makeText(getApplicationContext(), String.format("%d:%02d", minutes, seconds),Toast.LENGTH_SHORT).show();
-            //timerTextView.setText(String.format("%d:%02d", minutes, seconds));
 
             timerHandler.postDelayed(this, 30000);
         }
@@ -136,8 +131,13 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdgeHelper.enable(this);
         setContentView(R.layout.activity_emp_live_location);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        EdgeToEdgeHelper.applyInsets(this,
+                findViewById(R.id.live_location_root),
+                false,
+                false);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.live_map);
         assert mapFragment != null;
@@ -145,16 +145,15 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-//        locationRequest.setInterval(5);
-        locationRequest.setInterval(5000);
-        locationRequest.setFastestInterval(1000);
+        locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
+                .setWaitForAccurateLocation(true)
+                .setMinUpdateIntervalMillis(1000)
+                .build();
+
         speedText = findViewById(R.id.speed_text);
         moveEmpLoc = findViewById(R.id.move_card);
         speedCard = findViewById(R.id.speed_card);
         layer = findViewById(R.id.spinner_layer);
-
 
         iconGenerator = new IconGenerator(EmpLiveLocation.this);
         iconGenerator.setBackground(AppCompatResources.getDrawable(EmpLiveLocation.this,R.drawable.bg_custom_marker));
@@ -184,34 +183,19 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
         layer.setAdapter(spinnerAdapter);
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
         enableGPS();
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        //getUpdatedLocation();
-
-//        startTime = System.currentTimeMillis();
-//        timerHandler.postDelayed(timerRunnable, 0);
 
         mMap.setOnCameraMoveListener(() -> {
-
             if (emplatlngChange && !allEmp) {
                 moveEmpLoc.setVisibility(View.VISIBLE);
             }
-
-
         });
+
         mMap.setOnCameraIdleListener(() -> emplatlngChange = true);
 
         layer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -222,8 +206,6 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
                     case "NORMAL":
                         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                         try {
-                            // Customise the styling of the base map using a JSON object defined
-                            // in a raw resource file.
                             boolean success = googleMap.setMapStyle(
                                     MapStyleOptions.loadRawResourceStyle(
                                             EmpLiveLocation.this, R.raw.normal));
@@ -251,8 +233,6 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
                     case "TRAFFIC":
                         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                         try {
-                            // Customise the styling of the base map using a JSON object defined
-                            // in a raw resource file.
                             boolean success = googleMap.setMapStyle(
                                     MapStyleOptions.loadRawResourceStyle(
                                             EmpLiveLocation.this, R.raw.normal));
@@ -268,8 +248,6 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
                     case "NO LANDMARK":
                         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                         try {
-                            // Customise the styling of the base map using a JSON object defined
-                            // in a raw resource file.
                             boolean success = googleMap.setMapStyle(
                                     MapStyleOptions.loadRawResourceStyle(
                                             EmpLiveLocation.this, R.raw.no_landmark));
@@ -347,21 +325,19 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
 
                 if (allDetailsMarker != null) {
                     Marker marker = allDetailsMarker.get(i);
+                    String tvText = allEmpLocationLists.get(i).getEmpName()+"\n"+allEmpLocationLists.get(i).getTime();
+                    textView.setText(tvText);
+                    iconGenerator.setContentView(inflatedView);
                     if (marker == null) {
-                        textView.setText(allEmpLocationLists.get(i).getEmpName()+"\n"+allEmpLocationLists.get(i).getTime());
-                        iconGenerator.setContentView(inflatedView);
                         marker = mMap.addMarker(new MarkerOptions()
                                 .position(latLng).anchor(0,0)
                                 .icon(BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon())));
-                        allDetailsMarker.set(i,marker);
                     }
                     else {
-                        textView.setText(allEmpLocationLists.get(i).getEmpName()+"\n"+allEmpLocationLists.get(i).getTime());
-                        iconGenerator.setContentView(inflatedView);
                         marker.setPosition(latLng);
                         marker.setIcon(BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon()));
-                        allDetailsMarker.set(i,marker);
                     }
+                    allDetailsMarker.set(i,marker);
                 }
 
             }
@@ -386,8 +362,6 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
            //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
            speedText.setText(speed);
            System.out.println("NULL MARKER");
-
-
         }
         else {
             empLocationMarker.setPosition(latLng);
@@ -411,21 +385,19 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
             locationAccuracyCircle.setRadius(acc);
         }
 
+        String tvText = emp_name+"\n"+time;
+        textView.setText(tvText);
+        iconGenerator.setContentView(inflatedView);
         if (detailsMarker == null) {
-            textView.setText(emp_name+"\n"+time);
-            iconGenerator.setContentView(inflatedView);
             detailsMarker = mMap.addMarker(new MarkerOptions()
                                 .position(latLng).anchor(0,0)
                                 .icon(BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon())));
-        } else {
-            textView.setText(emp_name+"\n"+time);
-            iconGenerator.setContentView(inflatedView);
+        }
+        else {
             detailsMarker.setPosition(latLng);
             detailsMarker.setIcon(BitmapDescriptorFactory.fromBitmap(iconGenerator.makeIcon()));
         }
     }
-
-
 
     @Override
     protected void onPause() {
@@ -677,24 +649,15 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
     }
 
     public void zoomToUserLocation() {
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.i("Ekhane", "1");
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         mMap.setMyLocationEnabled(true);
 
         Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
         locationTask.addOnSuccessListener(location -> {
-//                Log.i("lattt", location.toString());
             LatLng latLng;
-
 
             if (location != null) {
                 latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -705,82 +668,38 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
                 System.out.println(latLng);
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
             }
-
         });
     }
 
     private void enableGPS() {
-        if (googleApiClient == null) {
-            googleApiClient = new GoogleApiClient.Builder(this)
-                    .addApi(LocationServices.API).addConnectionCallbacks(EmpLiveLocation.this)
-                    .addOnConnectionFailedListener(EmpLiveLocation.this).build();
-            googleApiClient.connect();
-            LocationRequest locationRequest = LocationRequest.create();
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-            locationRequest.setInterval(30 * 1000);
-            locationRequest.setFastestInterval(5 * 1000);
-            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                    .addLocationRequest(locationRequest);
+        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 3000)
+                .setWaitForAccurateLocation(false)
+                .setMinUpdateIntervalMillis(1000)
+                .setMaxUpdateDelayMillis(2000)
+                .build();
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
 
-            // **************************
-            builder.setAlwaysShow(true); // this is the key ingredient
-            // **************************
+        SettingsClient client = LocationServices.getSettingsClient(this);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
 
-            PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi
-                    .checkLocationSettings(googleApiClient, builder.build());
-            result.setResultCallback(result1 -> {
-                final Status status = result1.getStatus();
-                final LocationSettingsStates state = result1
-                        .getLocationSettingsStates();
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
-                        // All location settings are satisfied. The client can
-                        // initialize location
-                        // requests here.
-                        Log.i("Exit", "3");
-                        //info.setText("Done");
-                        zoomToUserLocation();
-                        break;
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        // Location settings are not satisfied. But could be
-                        // fixed by showing the user
-                        // a dialog.
-                        Log.i("Exit", "4");
-                        try {
-                            // Show the dialog by calling
-                            // startResolutionForResult(),
-                            // and check the result in onActivityResult().
-                            status.startResolutionForResult(EmpLiveLocation.this, 1000);
-                        } catch (IntentSender.SendIntentException e) {
-                            // Ignore the error.
-                        }
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        // Location settings are not satisfied. However, we have
-                        // no way to fix the
-                        // settings so we won't show the dialog.
-                        Log.i("Exit", "5");
-                        break;
+        task.addOnSuccessListener(this, locationSettingsResponse -> zoomToUserLocation());
+
+        task.addOnFailureListener(this, e -> {
+            if (e instanceof ResolvableApiException) {
+                // Location settings are not satisfied, but this can be fixed
+                // by showing the user a dialog.
+                try {
+                    // Show the dialog by calling startResolutionForResult(),
+                    // and check the result in onActivityResult().
+                    ResolvableApiException resolvable = (ResolvableApiException) e;
+                    resolvable.startResolutionForResult(EmpLiveLocation.this,
+                            1000);
+                } catch (IntentSender.SendIntentException sendEx) {
+                    // Ignore the error.
                 }
-            });
-
-
-        }
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+            }
+        });
     }
 
     @Override
@@ -788,20 +707,14 @@ public class EmpLiveLocation extends AppCompatActivity implements OnMapReadyCall
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1000) {
             if (resultCode == Activity.RESULT_OK) {
-                String result = data.getStringExtra("result");
-                //info.setText("Done");
                 zoomToUserLocation();
                 Log.i("Hoise ", "1");
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                //Write your code if there's no result
                 Log.i("Hoise ", "2");
                 LatLng latLng = new LatLng(23.6850, 90.3563);
                 System.out.println(latLng);
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 7));
-//                info.setText("Please Set the GPS ON for Using This App");
-//                quit.setVisibility(View.VISIBLE);
-//                System.exit(0);
             }
         }
     }

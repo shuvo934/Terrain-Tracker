@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/statusBarcoloRSecond"
-    android:fitsSystemWindows="true"
+    android:id="@+id/att_up_req_approve_root"
     tools:context=".attendance.AttendanceUpdateReqApproval">
 
     <LinearLayout

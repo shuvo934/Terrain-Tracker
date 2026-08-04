@@ -12,9 +12,10 @@ import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,8 +23,10 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class GPXFileDecoder {
 
+    static Logger logger = Logger.getLogger(GPXFileDecoder.class.getName());
+
     public static ArrayList<Location> decodeGPX(File file){
-        ArrayList<Location> list = new ArrayList<Location>();
+        ArrayList<Location> list = new ArrayList<>();
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         try {
@@ -40,10 +43,10 @@ public class GPXFileDecoder {
                 NamedNodeMap attributes = node.getAttributes();
 
                 String newLatitude = attributes.getNamedItem("lat").getTextContent();
-                Double newLatitude_double = Double.parseDouble(newLatitude);
+                double newLatitude_double = Double.parseDouble(newLatitude);
 
                 String newLongitude = attributes.getNamedItem("lon").getTextContent();
-                Double newLongitude_double = Double.parseDouble(newLongitude);
+                double newLongitude_double = Double.parseDouble(newLongitude);
 
                 String newLocationName = newLatitude + ":" + newLongitude;
                 Location newLocation = new Location(newLocationName);
@@ -56,18 +59,8 @@ public class GPXFileDecoder {
 
             fileInputStream.close();
 
-        } catch (ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SAXException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
         }
 
         return list;
@@ -113,25 +106,15 @@ public class GPXFileDecoder {
 
             fileInputStream.close();
 
-        } catch (ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SAXException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
         }
 
         return desc;
     }
 
     public static ArrayList<ArrrayFile> multiLine(File file){
-        ArrayList<ArrrayFile> list = new ArrayList<ArrrayFile>();
+        ArrayList<ArrrayFile> list = new ArrayList<>();
         String lens = "";
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -144,7 +127,7 @@ public class GPXFileDecoder {
             NodeList nodelist_trkpt = elementRoot.getElementsByTagName("trk");
 
             for(int i = 0; i < nodelist_trkpt.getLength(); i++){
-                ArrayList<Location> lllList = new ArrayList<Location>();
+                ArrayList<Location> lllList = new ArrayList<>();
                 ArrayList<String> timeList = new ArrayList<>();
 
                 Node node = nodelist_trkpt.item(i);
@@ -155,7 +138,7 @@ public class GPXFileDecoder {
 
                 String attributesTRKD = node.getNodeName();
                 String attributesTRKDe = node.getNodeName();
-                Log.i("Node Name", attributesTRKDe.toString());
+                Log.i("Node Name", attributesTRKDe);
 
                 //NodeList nodeList = elementRoot.getElementsByTagName("trkpt");
 
@@ -181,10 +164,10 @@ public class GPXFileDecoder {
                             NamedNodeMap attributes = node2.getAttributes();
                             Log.i("Attrr", attributes.toString());
                             String newLatitude = attributes.getNamedItem("lat").getTextContent();
-                            Double newLatitude_double = Double.parseDouble(newLatitude);
+                            double newLatitude_double = Double.parseDouble(newLatitude);
                             Log.i("LAt; " , newLatitude);
                             String newLongitude = attributes.getNamedItem("lon").getTextContent();
-                            Double newLongitude_double = Double.parseDouble(newLongitude);
+                            double newLongitude_double = Double.parseDouble(newLongitude);
 
                             String newLocationName = newLatitude + ":" + newLongitude;
                             Location newLocation = new Location(newLocationName);
@@ -215,18 +198,8 @@ public class GPXFileDecoder {
 
             fileInputStream.close();
 
-        } catch (ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SAXException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
         }
 
         return list;
@@ -251,10 +224,10 @@ public class GPXFileDecoder {
                 NamedNodeMap attributes = node.getAttributes();
 
                 String newLatitude = attributes.getNamedItem("lat").getTextContent();
-                Double newLatitude_double = Double.parseDouble(newLatitude);
+                double newLatitude_double = Double.parseDouble(newLatitude);
 
                 String newLongitude = attributes.getNamedItem("lon").getTextContent();
-                Double newLongitude_double = Double.parseDouble(newLongitude);
+                double newLongitude_double = Double.parseDouble(newLongitude);
 
                 String newLocationName = newLatitude + ":" + newLongitude;
                 Location newLocation = new Location(newLocationName);
@@ -283,18 +256,8 @@ public class GPXFileDecoder {
 
             fileInputStream.close();
 
-        } catch (ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SAXException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
         }
 
         return waypointLists;

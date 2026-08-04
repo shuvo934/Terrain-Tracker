@@ -58,7 +58,12 @@ public class CenterAdapter extends RecyclerView.Adapter<CenterAdapter.CENTERHold
 
         @Override
         public void onClick(View v) {
-            mClickedItem.onCategoryClicked(getAdapterPosition());
+            int position = getBindingAdapterPosition();
+
+            if (position == RecyclerView.NO_POSITION) {
+                return;
+            }
+            mClickedItem.onCategoryClicked(position);
         }
     }
     public interface ClickedItem {

@@ -29,9 +29,6 @@ public class SelectCenterDialogue extends AppCompatDialogFragment implements Cen
     ImageView close;
     AlertDialog dialog;
 
-    String centerAPI = "";
-    String d_code = "";
-
     ArrayList<CenterList> centerLists;
     Context mContext;
 
@@ -61,7 +58,6 @@ public class SelectCenterDialogue extends AppCompatDialogFragment implements Cen
         dialog.setCanceledOnTouchOutside(false);
         setCancelable(false);
 
-        centerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         centerView.setLayoutManager(layoutManager);
 

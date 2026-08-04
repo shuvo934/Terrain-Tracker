@@ -12,21 +12,23 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
+import java.util.Objects;
+
 import ir.alirezabdn.wp7progress.WP7ProgressBar;
 import ttit.com.shuvo.terraintracker.R;
 
 public class WaitProgress extends AppCompatDialogFragment {
 
 
-    private WP7ProgressBar bar;
-    public static AlertDialog dialog;
+    WP7ProgressBar bar;
+    AlertDialog dialog;
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
 
         View view = inflater.inflate(R.layout.wait_bar, null);
         bar = view.findViewById(R.id.wp7progressBar);
@@ -37,7 +39,7 @@ public class WaitProgress extends AppCompatDialogFragment {
 
         dialog = builder.create();
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
         return dialog;

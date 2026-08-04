@@ -61,6 +61,7 @@ import ttit.com.shuvo.terraintracker.attendance.araylists.DivisionList;
 import ttit.com.shuvo.terraintracker.attendance.araylists.EmployeeList;
 import ttit.com.shuvo.terraintracker.leave.adapters.LeaveBalanceAdapter;
 import ttit.com.shuvo.terraintracker.leave.arraylists.LeaveBalanceList;
+import ttit.com.shuvo.terraintracker.utilities.EdgeToEdgeHelper;
 
 public class LeaveBalance extends AppCompatActivity {
 
@@ -137,7 +138,12 @@ public class LeaveBalance extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdgeHelper.enable(this);
         setContentView(R.layout.activity_leave_balance);
+        EdgeToEdgeHelper.applyInsets(this,
+                findViewById(R.id.leave_bal_root),
+                false,
+                false);
 
         fullLayout = findViewById(R.id.leave_balance_full_layout);
         circularProgressIndicator = findViewById(R.id.progress_indicator_leave_balance);

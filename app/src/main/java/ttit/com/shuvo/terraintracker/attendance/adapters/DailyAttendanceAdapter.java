@@ -133,12 +133,17 @@ public class DailyAttendanceAdapter extends RecyclerView.Adapter<DailyAttendance
             daCard = itemView.findViewById(R.id.emp_daily_att_card_view);
 
             daCard.setOnClickListener(view -> {
+                int position = getBindingAdapterPosition();
+
+                if (position == RecyclerView.NO_POSITION) {
+                    return;
+                }
                 AppCompatActivity activity = (AppCompatActivity) view.getContext();
                 Intent intent = new Intent(myContext, EmpWiseAttendance.class);
-                intent.putExtra("DIV_ID",mCategoryItem.get(getAdapterPosition()).getJsm_divm_id());
-                intent.putExtra("DEPT_ID",mCategoryItem.get(getAdapterPosition()).getJsm_dept_id());
-                intent.putExtra("DESIG_ID",mCategoryItem.get(getAdapterPosition()).getJsm_desig_id());
-                intent.putExtra("EMP_ID",mCategoryItem.get(getAdapterPosition()).getEmp_id());
+                intent.putExtra("DIV_ID",mCategoryItem.get(position).getJsm_divm_id());
+                intent.putExtra("DEPT_ID",mCategoryItem.get(position).getJsm_dept_id());
+                intent.putExtra("DESIG_ID",mCategoryItem.get(position).getJsm_desig_id());
+                intent.putExtra("EMP_ID",mCategoryItem.get(position).getEmp_id());
                 intent.putExtra("COA_ID",coa_id);
                 activity.startActivity(intent);
             });

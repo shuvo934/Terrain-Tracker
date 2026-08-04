@@ -66,10 +66,9 @@ import java.util.logging.Logger;
 
 import devs.mulham.horizontalcalendar.HorizontalCalendar;
 import devs.mulham.horizontalcalendar.utils.HorizontalCalendarListener;
-import ttit.com.shuvo.terraintracker.MainPage.HomePage;
 import ttit.com.shuvo.terraintracker.R;
-import ttit.com.shuvo.terraintracker.livelocation.EmpLiveLocation;
 import ttit.com.shuvo.terraintracker.progressBar.WaitProgress;
+import ttit.com.shuvo.terraintracker.utilities.EdgeToEdgeHelper;
 
 import static ttit.com.shuvo.terraintracker.Constants.api_url_front;
 import static ttit.com.shuvo.terraintracker.dash_board.Dashboard.testDataBlob;
@@ -134,12 +133,17 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
 
     Spinner layer;
 
-    Logger logger = Logger.getLogger(HomePage.class.getName());
+    Logger logger = Logger.getLogger(TimeLineActivity.class.getName());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdgeHelper.enable(this);
         setContentView(R.layout.activity_time_line);
+        EdgeToEdgeHelper.applyInsets(this,
+                findViewById(R.id.time_line_root),
+                false,
+                false);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -156,7 +160,6 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         scrollView = findViewById(R.id.scrollview_data);
         layer = findViewById(R.id.spinner_layer_timeline);
 
-
         areaLists = new ArrayList<>();
         tr_option = "1";
         trk = new ArrayList<>();
@@ -167,7 +170,6 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         markerData = new ArrayList<>();
         allMarkerLists = new ArrayList<>();
 
-        locationView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         locationView.setLayoutManager(layoutManager);
 
@@ -186,16 +188,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         layer.setAdapter(spinnerAdapter);
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @SuppressLint("PotentialBehaviorOverride")
+    @SuppressLint({"PotentialBehaviorOverride", "NotifyDataSetChanged"})
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
@@ -559,6 +552,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
         });
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public static void LocationCalled(LatLng latLng, String markerId, String markerType) {
         locationAdapter.notifyDataSetChanged();
         if (latLng != null) {
@@ -841,8 +835,9 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                             allMarkerLists.add(new AllMarkerLists(marker,String.valueOf(marker_Id),"3"));
 
 
-                        }else if (i == gpxList.size()-1){
-                            LatLng preGpx = new LatLng(gpxList.get(i-1).getLatitude(), gpxList.get(i-1).getLongitude());
+                        }
+                        else if (i == gpxList.size()-1) {
+//                            LatLng preGpx = new LatLng(gpxList.get(i-1).getLatitude(), gpxList.get(i-1).getLongitude());
 
                             options.icon(BitmapDescriptorFactory.fromResource(R.drawable.stop_loc_icon_new));
                             options.anchor((float) 0.5,(float) 0.5);
@@ -862,18 +857,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                             marker_Id++;
                             lastMarkerId = String.valueOf(marker_Id);
                             allMarkerLists.add(new AllMarkerLists(marker,String.valueOf(marker_Id),"4"));
-
-                        } else {
-//                            LatLng preGpx = new LatLng(gpxList.get(i-1).getLatitude(), gpxList.get(i-1).getLongitude());
-//
-//                            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.transparent_circle));
-//                            options.anchor((float) 0.5,(float) 0.5);
-//                            Double diss = CalculationByDistance(preGpx, gpx);
-//                            j  = j + diss;
-//                            options.snippet(String.format("%.3f", j) + " KM");
-//                            mMap.addMarker(options).setTitle("On Going Road");
                         }
-
                     }
                     locationNameArrays.add(new LocationNameArray(firstLoc,lastLoc,false,firstTime,lastTime,distance,calculateTime,String.valueOf(a),null,stoppedLocationTimes,firstLatLng,secondLatLng,firstMarkerId,lastMarkerId,"3","4",String.valueOf(position)));
                     int i = (gpxList.size() - 1) / 2;
@@ -1142,8 +1126,9 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                             firstMarkerId = String.valueOf(marker_Id);
                             allMarkerLists.add(new AllMarkerLists(marker,String.valueOf(marker_Id),"3"));
 
-                        }else if (i == gpxList.size()-1){
-                            LatLng preGpx = new LatLng(gpxList.get(i-1).getLatitude(), gpxList.get(i-1).getLongitude());
+                        }
+                        else if (i == gpxList.size()-1) {
+//                            LatLng preGpx = new LatLng(gpxList.get(i-1).getLatitude(), gpxList.get(i-1).getLongitude());
 
                             options.icon(BitmapDescriptorFactory.fromResource(R.drawable.stop_loc_icon_new));
                             options.anchor((float) 0.5,(float) 0.5);
@@ -1162,17 +1147,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                             marker_Id++;
                             lastMarkerId = String.valueOf(marker_Id);
                             allMarkerLists.add(new AllMarkerLists(marker,String.valueOf(marker_Id),"4"));
-                        } else {
-//                            LatLng preGpx = new LatLng(gpxList.get(i-1).getLatitude(), gpxList.get(i-1).getLongitude());
-//
-//                            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.transparent_circle));
-//                            options.anchor((float) 0.5,(float) 0.5);
-//                            Double diss = CalculationByDistance(preGpx, gpx);
-//                            j  = j + diss;
-//                            options.snippet(String.format("%.3f", j) + " KM");
-//                            mMap.addMarker(options).setTitle("On Going Road");
                         }
-
                     }
                     locationNameArrays.add(new LocationNameArray(firstLoc,lastLoc,false,firstTime,lastTime,distance,calculateTime,String.valueOf(a),null,stoppedLocationTimes,firstLatLng,secondLatLng,firstMarkerId,lastMarkerId,"3","4",String.valueOf(position)));
                     int i = (gpxList.size() - 1) / 2;
@@ -1358,7 +1333,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
 
                     }
 
-                    if (timelist.size() != 0) {
+                    if (!timelist.isEmpty()) {
                         firstTime = timelist.get(0);
                         lastTime = timelist.get(timelist.size()-1);
 
@@ -1452,8 +1427,8 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                             allMarkerLists.add(new AllMarkerLists(marker,String.valueOf(marker_Id),"3"));
 
 
-                        }else if (i == gpxList.size()-1){
-                            LatLng preGpx = new LatLng(gpxList.get(i-1).getLatitude(), gpxList.get(i-1).getLongitude());
+                        } else if (i == gpxList.size()-1) {
+//                            LatLng preGpx = new LatLng(gpxList.get(i-1).getLatitude(), gpxList.get(i-1).getLongitude());
 
                             options.icon(BitmapDescriptorFactory.fromResource(R.drawable.stop_loc_icon_new));
                             options.anchor((float) 0.5,(float) 0.5);
@@ -1474,17 +1449,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                             lastMarkerId = String.valueOf(marker_Id);
                             allMarkerLists.add(new AllMarkerLists(marker,String.valueOf(marker_Id),"4"));
 
-                        } else {
-//                            LatLng preGpx = new LatLng(gpxList.get(i-1).getLatitude(), gpxList.get(i-1).getLongitude());
-//
-//                            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.transparent_circle));
-//                            options.anchor((float) 0.5,(float) 0.5);
-//                            Double diss = CalculationByDistance(preGpx, gpx);
-//                            j  = j + diss;
-//                            options.snippet(String.format("%.3f", j) + " KM");
-//                            mMap.addMarker(options).setTitle("On Going Road");
                         }
-
                     }
                     locationNameArrays.add(new LocationNameArray(firstLoc,lastLoc,false,firstTime,lastTime,distance,calculateTime,String.valueOf(a),null,stoppedLocationTimes,firstLatLng,secondLatLng,firstMarkerId,lastMarkerId,"3","4",String.valueOf(position)));
                     int i = (gpxList.size() - 1) / 2;
@@ -2002,7 +1967,6 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                 } else {
                     polyline.setColor(Color.parseColor("#74b9ff"));
                     polyline.setWidth(17);
-                    int size = polyline.getPoints().size();
                 }
             }
         } else {
@@ -2096,11 +2060,7 @@ public class TimeLineActivity extends FragmentActivity implements OnMapReadyCall
                     JSONArray array = new JSONArray(items);
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject userImageInfo = array.getJSONObject(i);
-                        String elr_file_name = userImageInfo.getString("elr_file_name");
-                        String elr_filetype = userImageInfo.getString("elr_filetype");
                         String elr_location_file = userImageInfo.getString("elr_location_file");
-
-                        String fileName = elr_file_name + elr_filetype;
 
                         if (elr_location_file.equals("null") || elr_location_file.isEmpty()) {
                             System.out.println("NULL DATA");

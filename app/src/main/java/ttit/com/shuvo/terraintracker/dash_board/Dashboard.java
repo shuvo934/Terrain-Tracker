@@ -57,7 +57,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
 import com.github.dewinjm.monthyearpicker.MonthFormat;
 import com.github.dewinjm.monthyearpicker.MonthYearPickerDialogFragment;
 import com.github.mikephil.charting.charts.PieChart;
@@ -91,6 +90,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -110,6 +110,7 @@ import ttit.com.shuvo.terraintracker.loginFile.Login;
 import ttit.com.shuvo.terraintracker.loginFile.UserDesignation;
 import ttit.com.shuvo.terraintracker.loginFile.UserInfoList;
 import ttit.com.shuvo.terraintracker.progressBar.WaitProgress;
+import ttit.com.shuvo.terraintracker.utilities.EdgeToEdgeHelper;
 
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -235,7 +236,12 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdgeHelper.enable(this);
         setContentView(R.layout.activity_dashboard);
+        EdgeToEdgeHelper.applyInsets(this,
+                findViewById(R.id.dashboard_root),
+                false,
+                false);
 
         logOut = findViewById(R.id.log_out_icon);
         welcomeText = findViewById(R.id.welcome_text_view);
@@ -1028,17 +1034,16 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 for (InetAddress addr : addrs) {
                     if (!addr.isLoopbackAddress()) {
                         String sAddr = addr.getHostAddress();
-                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
+                        if (sAddr == null) continue;
                         boolean isIPv4 = sAddr.indexOf(':') < 0;
 
-                        if (useIPv4) {
-                            if (isIPv4)
-                                return sAddr;
-                        } else {
-                            if (!isIPv4) {
-                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
-                                return delim < 0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
-                            }
+                        if (useIPv4 && isIPv4) {
+                            return sAddr;
+                        }
+
+                        if (!useIPv4 && !isIPv4) {
+                            int delim = sAddr.indexOf('%');
+                            return delim < 0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
                         }
                     }
                 }
@@ -1051,9 +1056,15 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     public static String getHostName(String defValue) {
         try {
-            @SuppressLint("DiscouragedPrivateApi") Method getString = Build.class.getDeclaredMethod("getString", String.class);
+            String tt = "getString";
+            @SuppressLint("DiscouragedPrivateApi") Method getString = Build.class.getDeclaredMethod(tt, String.class);
             getString.setAccessible(true);
-            return getString.invoke(null, "net.hostname").toString();
+            if (getString.invoke(null, "net.hostname") == null) {
+                return defValue;
+            }
+            else {
+                return Objects.requireNonNull(getString.invoke(null, "net.hostname")).toString();
+            }
         } catch (Exception ex) {
             return defValue;
         }
@@ -1834,10 +1845,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                     payRollWd.setText(wd);
 
                     if (imageFound) {
-                        Glide.with(Dashboard.this)
-                                .load(selectedImage)
-                                .fitCenter()
-                                .into(userImage);
+                        userImage.setImageBitmap(selectedImage);
                     }
                     else {
                         userImage.setImageResource(R.drawable.profile);

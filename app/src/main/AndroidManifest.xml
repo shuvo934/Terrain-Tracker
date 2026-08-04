@@ -17,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TerrainTracker"
         android:usesCleartextTraffic="true">
+        <property
+            android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY"
+            android:value="true" />
         <activity
             android:name=".leave.LeaveApproval"
             android:exported="false"
@@ -86,6 +89,7 @@
         <activity
             android:name=".loginFile.Login"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
             tools:ignore="DiscouragedApi,LockedOrientationActivity" />
         <activity
             android:name=".MainActivity"

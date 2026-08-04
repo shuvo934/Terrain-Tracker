@@ -164,7 +164,6 @@ public class AttUpReqSelectionDialog extends AppCompatDialogFragment implements 
             return false;
         });
 
-        recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),DividerItemDecoration.VERTICAL);
